@@ -21,29 +21,29 @@ var database_path string = "database/mysql"
 var privateKey *rsa.PrivateKey
 var publicKey *rsa.PublicKey
 
-func change_public_key_path(key_path string) int {
+func Change_public_key_path(key_path string) int {
 	public_key_path = key_path
 	return 1
 }
 
-func change_private_key_path(key_path string) int {
+func Change_private_key_path(key_path string) int {
 	private_key_path = key_path
 	return 1
 }
 
-func change_database_path(db_path string) int {
+func Change_database_path(db_path string) int {
 	database_path = db_path
 	return 1
 }
 
-func print_all_path() int {
+func Print_all_path() int {
 	fmt.Printf("公钥地址:%s\n", public_key_path)
 	fmt.Printf("私钥地址:%s\n", private_key_path)
 	fmt.Printf("数据库地址:%s\n", database_path)
 	return 1
 }
 
-func create_myself_key() int {
+func Create_myself_key() int {
 	temp_privateKey, err := rsa.GenerateKey(rand.Reader, 2048)
 	if err != nil {
 		return 0
@@ -101,7 +101,7 @@ func create_myself_key() int {
 	return 1
 }
 
-func init_procedure() int {
+func Init_procedure() int {
 	//判断是否有公钥、私钥和数据库文件，如果没有就创建一个；否则就加载进去，用于程序一开始的加载
 	fmt.Print("程序初始化")
 	flag := 1
@@ -155,7 +155,7 @@ func init_procedure() int {
 		fmt.Println("读取并解析公钥成功:")
 	}
 	if flag == 0 || flag2 == 0 {
-		flag = create_myself_key()
+		flag = Create_myself_key()
 		if flag != 1 {
 			return 0
 		}
@@ -166,7 +166,7 @@ func init_procedure() int {
 
 }
 
-func load() int {
+func Load() int {
 	//判断是否有公钥、私钥和数据库文件，如果有就加载，否则返回错误码
 	/*
 		err 0：一些系统错误
@@ -229,18 +229,18 @@ func load() int {
 
 }
 
-func utf_string2base_bytes(message string) ([]byte, int) {
+func UTF_string2base_bytes(message string) ([]byte, int) {
 	message_byte := []byte(message)
 	base_bytes := base64.StdEncoding.EncodeToString(message_byte)
 	return []byte(base_bytes), 1
 }
 
-func bytes2base_string(bytes_data []byte) (string, int) {
+func Bytes2base_string(bytes_data []byte) (string, int) {
 	encoded := base64.StdEncoding.EncodeToString(bytes_data)
 	return encoded, 1
 }
 
-func base_string2bytes(message string) ([]byte, int) {
+func Base_string2bytes(message string) ([]byte, int) {
 	decoded, err := base64.StdEncoding.DecodeString(message)
 	if err != nil {
 		fmt.Println("Decoding error:", err)
@@ -249,7 +249,7 @@ func base_string2bytes(message string) ([]byte, int) {
 	return decoded, 1
 }
 
-func base_bytes2utf_string(bytes_data []byte) (string, int) {
+func Base_bytes2utf_string(bytes_data []byte) (string, int) {
 	message := string(bytes_data)
 	utf_bytes_data, err := base64.StdEncoding.DecodeString(message)
 	if err != nil {
@@ -259,6 +259,12 @@ func base_bytes2utf_string(bytes_data []byte) (string, int) {
 	return string(utf_bytes_data), 1
 }
 
-func block_encrypt(bytes_data []byte, public_key *rsa.PublicKey) ([]byte, int) {
+func Block_encrypt(bytes_data []byte, public_key *rsa.PublicKey) ([]byte, int) {
+	//
+	return bytes_data, 1
+}
 
+func Block_decrypt(bytes_data []byte, private_key *rsa.PrivateKey) (string, int) {
+	//
+	return "decrypted", 1
 }

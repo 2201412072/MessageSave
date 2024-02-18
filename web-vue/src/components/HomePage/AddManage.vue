@@ -11,6 +11,7 @@
 </template>
 
 <script>
+const axios = require('axios');
 
 export default ({
   name: 'AddManage',
@@ -25,8 +26,19 @@ export default ({
   },
   methods: {
     add(){
-        console.log(key_word,passwd,user);
-    }
+        console.log("Add:",this.key_word,this.passwd,this.user);
+        
+        axios.post("http://localhost:8090/AddPassword")
+        .then(response => {
+                console.log('added password data successfully.');
+                alert('added successfully.')
+            },
+        )
+        .catch(response => {
+            console.log("error",response);
+            alert("add failed.");
+        })
+    },
   }
 });
 </script>
