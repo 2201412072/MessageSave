@@ -28,7 +28,12 @@ export default ({
     add(){
         console.log("Add:",this.key_word,this.passwd,this.user);
         
-        axios.post("http://localhost:8090/AddPassword")
+          // axios.post("http://localhost:8090/AddPassword")
+        axios.post("http://localhost:8090/AddPassword",{
+          "key_word":this.key_word,
+          "passwd":this.passwd,
+          "user":this.user,
+        })
         .then(response => {
                 console.log('added password data successfully.');
                 alert('added successfully.')

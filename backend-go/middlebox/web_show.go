@@ -17,7 +17,7 @@ type passwd_view struct {
 }
 
 func Init_web_show_table() int {
-	MyDB, flag := mydatabase.Db_load(database_path)
+	MyDB, flag := mydatabase.Db_load()
 	if flag != 1 {
 		return 0
 	}

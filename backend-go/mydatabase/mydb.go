@@ -1,9 +1,7 @@
 package mydatabase
 
 import (
-	"database/sql"
 	"fmt"
-	"os"
 	"time"
 
 	"gorm.io/driver/mysql"
@@ -11,6 +9,7 @@ import (
 )
 
 var myDB *gorm.DB
+var err error
 
 type Public_keys struct {
 	Username   string `gorm:"primaryKey;size:100"`
@@ -43,36 +42,46 @@ func Download_db() *gorm.DB {
 	return myDB
 }
 
-func Db_load(db_path string) (*gorm.DB, int) {
-	user := "user"
-	password := "user"
+func Db_load() (*gorm.DB, int) {
+	user := "message_save"
+	password := "message_save"
 	host := "localhost"
 	port := "3306"
-	dbname := "MessageSave"
+	dbname := "MessageSaveDB"
 	charset := "utf8"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local", user, password, host, port, dbname, charset)
-	//dsn := "user:pass@tcp(127.0.0.1:3306)/dbname?charset=utf8mb4&parseTime=True&loc=Local"
-	_, err := os.Stat(db_path)
-	if os.IsNotExist(err) {
-		myDB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
-		if err != nil {
-			//panic(err)
-			return nil, 0
-		}
-	} else {
-		sqlDB, err := sql.Open("mysql", dsn)
-		if err != nil {
-			//panic(err)
-			return nil, 0
-		}
-		myDB, err = gorm.Open(mysql.New(mysql.Config{
-			Conn: sqlDB,
-		}), &gorm.Config{})
+
+	// _ = dsn
+	// // 建立数据库连接
+	// sqlDB, err := sql.Open("mysql", fmt.Sprintf("%s:%s@/%s", user, password, dbname))
+	// if err != nil {
+	// 	return nil, 0
+	// }
+	// // defer MyDB.Close()
+	// // 测试连接是否成功
+	// err = sqlDB.Ping()
+	// if err != nil {
+	// 	return nil, 0
+	// }
+	// myDB, err = gorm.Open(mysql.New(mysql.Config{
+	// 	Conn: sqlDB,
+	// }), &gorm.Config{})
+	// fmt.Println("数据库连接成功", sqlDB)
+
+	// 不能加冒号，一加冒号就会在函数内部生成一个局部的myDB返回，导致下面显示的myDB为nil
+	// https://blog.csdn.net/m0_46251547/article/details/123294581
+	myDB, err = gorm.Open(mysql.Open(dsn), &gorm.Config{})
+	if err != nil {
+		fmt.Println("myDB open failed!", err)
+		return nil, 0
 	}
+
+	// 数据库初始化表（默认数据库已建立）
 	flag := DB_init_table()
 	if flag != 1 {
 		return nil, 0
 	}
+	// fmt.Println("MyDB", myDB)  // &{0xc0001290e0 invalid transaction 0 0xc000450540 1}
 	return myDB, 1
 }
 
@@ -108,7 +117,7 @@ func Get_single_public_key(username string) (Public_keys, int) {
 	var err int
 	var temp Public_keys
 	myDB.Where("username = ? ", username).Find(&temps)
-	if len(temps) > 1 || len(temps)==0 {
+	if len(temps) > 1 || len(temps) == 0 {
 		err = 0
 		temp = Public_keys{}
 	} else {
@@ -201,6 +210,16 @@ func Clean_create_agree(mytime time.Time) int {
 	return 1
 }
 
+func Get_password() ([]Password, int) {
+	var temps []Password
+	result := myDB.Find(&temps)
+	if result.Error != nil {
+		return temps, 0
+	} else {
+		return temps, 1
+	}
+}
+
 func Get_application2user_password(application string) ([]Password, int) {
 	var temps []Password
 	result := myDB.Where("application=?", application).Find(&temps)
@@ -217,7 +236,7 @@ func Get_application_name2key_password(application string, username string) (Pas
 	if result.Error != nil {
 		return Password{}, 0
 	} else {
-		if len(temps) > 1 {
+		if len(temps) != 1 {
 			return Password{}, 0
 		} else {
 			return temps[0], 1

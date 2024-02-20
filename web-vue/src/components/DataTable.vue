@@ -78,12 +78,12 @@ export default{
         fetchdata(){
             axios.get("http://localhost:8090/"+this.page)
             .then(response => {
-                    console.log('get password data.');
                     this.tableData = response.data;
+                    console.log('get password data.', this.tableData);
                 },
             )
-            .catch(response => {
-                console.log("error",response);
+            .catch(error => {
+                console.log("error",error);
                 alert("请求失败");
             })
         },

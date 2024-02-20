@@ -2,8 +2,11 @@
     <div id="AskManage" title="Search the password app wanted.">
         <span>Search</span>
         <div id="input-div" class="input-container">
+          <span>Key Word</span>
           <el-input class="input" type="text" v-model="key_word" placeholder="please input the key word." ></el-input>
-          <el-button class="input-button" @click="ask">Ask</el-button>
+          <span>Connect User</span>
+          <el-input class="input" type="text" v-model="connect_user" placeholder="please input the connect user." ></el-input>
+          <el-button class="input-button" @click="search">Search</el-button>
         </div>
         <div id="text-show" class="text-container">
           <div class="scrollable-container">
@@ -19,6 +22,7 @@
 </template>
 
 <script>
+const axios = require('axios');
 
 export default ({
   name: 'AskManage',
@@ -27,12 +31,25 @@ export default ({
   data() {
     return {
       key_word: '',
+      connect_user: '',
       textContent: '',
     };
   },
   methods: {
-    ask() {
+    search() {
       console.log(this.key_word);
+      axios.post("http://localhost:8090/SearchPassword",{
+        "key_word":key_word,
+      })
+        .then(response => {
+                console.log('searched over.',response);
+
+            },
+        )
+        .catch(response => {
+            console.log("error",response);
+            alert("search failed.");
+        })
     },
     copy(){
       console.log(this.textContent);
