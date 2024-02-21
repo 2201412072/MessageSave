@@ -39,11 +39,12 @@ export default ({
     search() {
       console.log(this.key_word);
       axios.post("http://localhost:8090/SearchPassword",{
-        "key_word":key_word,
+        "key_word":this.key_word,
+        'user':this.connect_user,
       })
         .then(response => {
                 console.log('searched over.',response);
-
+                this.textContent = response['passwd']
             },
         )
         .catch(response => {

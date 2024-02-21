@@ -291,6 +291,7 @@ func Base_string2bytes(message string) ([]byte, int) {
 // Base64字节转UTF字符串
 func Base_bytes2utf_string(bytes_data []byte) (string, int) {
 	message := string(bytes_data)
+	// message := base64.StdEncoding.EncodeToString(bytes_data)
 	utf_bytes_data, err := base64.StdEncoding.DecodeString(message)
 	if err != nil {
 		fmt.Println("Decoding error:", err)
