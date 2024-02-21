@@ -110,7 +110,7 @@ export default{
 
         Reset(){
             this.form.key_word = '';
-            this.from.connect_user = '';
+            this.form.connect_user = '';
         }
     }
 }

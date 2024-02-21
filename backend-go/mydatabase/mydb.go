@@ -269,6 +269,16 @@ func Delete_username_password(username string) int {
 	return 1
 }
 
+func Get_important() ([]Important_message, int) {
+	var temps []Important_message
+	result := myDB.Find(&temps)
+	if result.Error != nil {
+		return temps, 0
+	} else {
+		return temps, 1
+	}
+}
+
 func Get_keyword_important() ([]Important_message, int) {
 	var temps []Important_message
 	myDB.Find(&temps)

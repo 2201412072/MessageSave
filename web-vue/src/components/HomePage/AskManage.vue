@@ -46,7 +46,7 @@
           <div class="scrollable-container">
             <el-scrollbar class="scrollbar-wrapper">
               <div class="scrollable-content">
-              {{ otehr_decrypted_password }}
+              {{ other_decrypted_password }}
               </div>
             </el-scrollbar>
           </div>
@@ -69,7 +69,7 @@ export default ({
       encrypted_password: '',
       decrypted_password: '',
       other_password: '',
-      otehr_decrypted_password: '',
+      other_decrypted_password: '',
     };
   },
   methods: {
@@ -81,7 +81,7 @@ export default ({
       })
         .then(response => {
                 console.log('searched over.',response);
-                this.textContent = response['passwd'];
+                this.origin_password = response.data.passwd;
                 this.key_word = '';
                 this.connect_user = '';
             },
@@ -109,7 +109,7 @@ export default ({
       })
       .then(reponse =>{
         console.log('decrypted successfully.');
-        this.decrypted_password = reponse['passwd'];
+        this.decrypted_password = reponse.data.passwd;
         this.encrypted_password = '';
       })
       .catch(response => {
@@ -123,7 +123,7 @@ export default ({
       })
       .then(reponse =>{
         console.log('decrypted successfully.');
-        this.other_decrypted_password = reponse['passwd'];
+        this.other_decrypted_password = reponse.data.passwd;
         this.other_password = '';
       })
       .catch(response => {

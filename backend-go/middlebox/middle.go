@@ -63,25 +63,6 @@ func Create_myself_key() int {
 	// 从私钥中导出公钥
 	temp_publicKey := &temp_privateKey.PublicKey
 
-	// // 原始数据
-	// plaintext := []byte("Hello, World!")
-
-	// // 使用公钥加密数据
-	// ciphertext, err := rsa.EncryptPKCS1v15(rand.Reader, temp_publicKey, plaintext)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// fmt.Printf("加密后的数据：%x\n", ciphertext)
-
-	// // 使用私钥解密数据
-	// decryptedText, err := rsa.DecryptPKCS1v15(rand.Reader, temp_privateKey, ciphertext)
-	// if err != nil {
-	// 	panic(err)
-	// }
-
-	// fmt.Printf("解密后的数据：%s\n", decryptedText)
-
 	// 将私钥和公钥保存到文件
 	privateKeyFile, err := os.Create(private_key_path)
 	if err != nil {
@@ -191,6 +172,7 @@ func Init_procedure() int {
 }
 
 // 加载公钥私钥和数据库
+// 它与函数init_procedure的功能基本相同，但它用来在change了基本操作，如database path等后，进行load，确保该路径没有后，也不会直接新建一个
 func Load() int {
 	//判断是否有公钥、私钥和数据库文件，如果有就加载，否则返回错误码
 	/*
@@ -300,7 +282,7 @@ func Base_bytes2utf_string(bytes_data []byte) (string, int) {
 	return string(utf_bytes_data), 1
 }
 
-// 使用公钥对明文加密
+// 使用公钥对明文加密（已经考虑了分块加密）
 func Block_encrypt(bytes_data []byte, public_key *rsa.PublicKey) ([]byte, int) {
 	//
 	ciphertext := make([]byte, 0)
@@ -321,7 +303,7 @@ func Block_encrypt(bytes_data []byte, public_key *rsa.PublicKey) ([]byte, int) {
 	return ciphertext, 1
 }
 
-// 使用私钥对密文解密
+// 使用私钥对密文解密（同理，这个为分块解密）
 func Block_decrypt(bytes_data []byte) ([]byte, int) {
 	//
 	plaintext := make([]byte, 0)
@@ -343,7 +325,7 @@ func Block_decrypt(bytes_data []byte) ([]byte, int) {
 	return plaintext, 1
 }
 
-// 关联用户对数据加密
+// 使用关联用户的公钥对数据加密
 func Using_other_public(username string, bytes_data []byte) ([]byte, int) {
 	temp, flag := mydatabase.Get_single_public_key(username)
 	if flag == 0 {
@@ -378,6 +360,17 @@ func Using_myself_private(bytes_data []byte) ([]byte, int) {
 	}
 	return cipher_key, 1
 }
+
+/*
+同意功能的阶段：
+A->B:
+	1、获取本地时间，append上A想要执行的操作（用_隔开方便分割），然后发送给B，记录到数据库中
+	2、收到B发送的回复，使用verify验证，判断是否同意，同时进行agree库的删除
+B->A:
+	1、收到A发送的请求，查看是否同意
+	2、如果B同意,则在该信息前加上agree_,使用sign签名，发送给A，
+	3、如果不同意则将“don't agree”的信息进行sign，发送给A
+*/
 
 // 生成操作请求
 func Agree_A2B_stage1(operator string) (string, int) {
@@ -432,6 +425,7 @@ func Agree_B2A_stage1(username string, message string) (string, time.Time, strin
 	return username, temp_time, result[1], 1
 }
 
+// B收到A的消息后，同意，执行的函数
 func agree_B2A_stage2_a(mytime time.Time, operator string) (string, int) {
 	timeStr := mytime.Format(layout)
 	agree_string := "agree_" + timeStr + "_" + operator
@@ -451,6 +445,7 @@ func agree_B2A_stage2_a(mytime time.Time, operator string) (string, int) {
 	return string_data, 1
 }
 
+// B收到A的消息后，不同意，执行的函数
 func agree_B2A_stage2_d() (string, int) {
 	agree_string := "don't agree"
 	temp_bytes_data, flag := UTF_string2base_bytes(agree_string)
@@ -469,8 +464,29 @@ func agree_B2A_stage2_d() (string, int) {
 	return string_data, 1
 }
 
-// 对Base64 string类型的数据进行一次解密得到UTF string类型的数据（整个解密过程需进行两次该操作，一个用户一次）
-func Deal_B2A_message(message string) (string, int) {
+/*
+加解密的流程：
+password加密：PB(PA(password))
+解密：B先解密，得到PA(password)，此时它为一个bytes数组，无法用utf string展示，所以需要转成base string展示，即为Deal_B2A_message_to_base
+然后A解密后得到password，由于此时为utf bytes，因此转成utf string就行，即为Deal_B2A_message_to_utf
+*/
+
+// 对Base64 string类型的数据进行一次解密得到base string类型的数据（整个解密过程需进行一次该操作，B用户收到A请求后）
+func Deal_B2A_message_to_base(message string) (string, int) {
+	temp_bytes_data, flag := Base_string2bytes(message)
+	if flag != 1 {
+		return "", 1
+	}
+	bytes_data, _ := Using_myself_private(temp_bytes_data)
+	string_data, flag := Bytes2base_string(bytes_data)
+	if flag != 1 {
+		return "", 0
+	}
+	return string_data, 1
+}
+
+// 对Base64 string类型的数据进行一次解密得到UTF string类型的数据（整个解密过程需进行一次该操作，A用户收到B回复后）
+func Deal_B2A_message_to_utf(message string) (string, int) {
 	temp_bytes_data, flag := Base_string2bytes(message)
 	if flag != 1 {
 		return "", 1
