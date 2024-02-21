@@ -1,12 +1,14 @@
 <template>
-    <div id="AddUserPublicKey" title="Add the user public key." class="container">
-        <span class="span-tip">Add User Public Key</span>
-        <div class="input-container">
-            <span class="span-tip">User</span>
-            <el-input class="input" type="text" v-model="User" placeholder="please input the user."></el-input>
-            <span class="span-tip">Public Key</span>
-            <el-input class="input" type="text" v-model="Public_key" placeholder="please input the public key."></el-input>
-            <el-button @click="add">Add</el-button>
+    <div id="AddUserPublicKey" title="Add the user public key.">
+        <span class="span-tip" style="font-size:24px;">Add User Public Key</span>
+        <div class="container">
+            <div class="input-container">
+                <span class="span-tip">User</span>
+                <el-input class="input" type="text" v-model="User" placeholder="input the user."></el-input>
+                <span class="span-tip">Public Key</span>
+                <el-input class="input" type="text" v-model="Public_key" placeholder="input the public key."></el-input>
+            </div>
+            <el-button class="button" @click="add">Add</el-button>
         </div>
     </div>
 </template>
@@ -46,10 +48,19 @@ export default ({
 
 <style scoped>
 .container{
-  margin-top: 20px;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  margin-top: 10px;
+  margin-bottom: 20px;
 }
 
-.input-container {
-  display: flex;
+.input-container{
+    display: flex;
+}
+
+.button{
+  margin-left: auto;
+  width:70px;
 }
 </style>

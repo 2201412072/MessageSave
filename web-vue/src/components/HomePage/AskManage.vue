@@ -1,11 +1,13 @@
 <template>
     <div id="AskManage">
-        <span class="span-tip">Search</span>
-        <div id="input-div" class="input-container">
-          <span class="span-tip">Key Word</span>
-          <el-input class="el-input" type="text" v-model="key_word" placeholder="please input the key word." style="width: 250px"></el-input>
-          <span class="span-tip">Connect User</span>
-          <el-input class="el-input" type="text" v-model="connect_user" placeholder="please input the connect user." style="width: 250px"></el-input>
+        <span class="span-tip" style="margin-bottom: 20px; font-size:24px;">Search</span>
+        <div id="input-div" class="container">
+          <div class="input-container">
+            <span class="span-tip">Key Word</span>
+            <el-input class="el-input" type="text" v-model="key_word" placeholder="input the key word."></el-input>
+            <span class="span-tip">Connect User</span>
+            <el-input class="el-input" type="text" v-model="connect_user" placeholder="input the connect user."></el-input>
+          </div>
           <el-button class="button" @click="search">Search</el-button>
         </div>
         <div id="origin-show" class="text-container">
@@ -24,8 +26,8 @@
 
         <div id="passwd-show" class="text-container">
           <div class="container-tips">
-            <span class="span-tip">Encrypted Password</span>
-            <el-input class="input" type="text" v-model="encrypted_password" plcaehodler="please input the encrypted password."></el-input>
+            <span class="span-tip" style="margin-right: 10px">Encrypted Password</span>
+            <el-input class="input" type="text" v-model="encrypted_password" placeholder="input the encrypted password." style="margin-right: 10px;"></el-input>
             <el-button class="button" @click="decrypt">Decrypt</el-button> 
           </div>
           <div class="scrollable-container">
@@ -39,8 +41,8 @@
 
         <div id="other-passwd-decrypt" class="text-container">
           <div class="container-tips">
-            <span class="span-tip">Other User's Encrypted Password</span>
-            <el-input class="input" type="text" v-model="other_password" plcaehodler="please input the password other user sended to you."></el-input>
+            <span class="span-tip" style="margin-right: 10px">Other User's Encrypted Password</span>
+            <el-input class="input" type="text" v-model="other_password" placeholder="input the password other user sended to you." style="margin-right: 10px"></el-input>
             <el-button class="button" @click="decrypt_other">Decrypt</el-button> 
           </div>
           <div class="scrollable-container">
@@ -101,7 +103,7 @@ export default ({
       InputElement.remove(); // 移除该临时输入框
       console.log("copy over.", text);
 
-      this.origin_password = '';
+      // this.origin_password = '';
     },
     decrypt(){
       axios.post("http://localhost:8090/DecryptPassword",{
@@ -136,14 +138,18 @@ export default ({
 </script>
 
 <style scoped>
+.container{
+  width: 600 px;
+  display: flex;
+  align-items: center;
+  margin-top: 15px;
+}
+
 .input-container{
     display: flex;
-    align-items: center;
-    width: 500px;
 }
 
 .text-container{
-  /* display: flex; */
   align-items: center;
   width: 100%;
 }
@@ -152,6 +158,7 @@ export default ({
   display: flex;
   align-items: center;
   width: 100%;
+  margin-bottom: 5px;
 }
 
 .scrollable-container {
@@ -159,7 +166,7 @@ export default ({
   height: 100px; /* 设置容器的高度 */
   overflow: auto; /* 添加滚动条 */
   border: 1px solid;
-  
+  margin-bottom: 10px;
 }
 
 .scrollbar-wrapper{
@@ -171,9 +178,9 @@ export default ({
   padding: 10px; /* 可根据需求设置内容的内边距 */
   color: #8a8a8a;
 }
-
+  
 .button{
   margin-left: auto;
+  width:70px;
 }
-
 </style>

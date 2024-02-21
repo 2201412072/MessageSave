@@ -2,12 +2,12 @@
     <div>
         <!-- 查询 -->
         <div class="search">
-            <el-form :model="form" :inline="true">
+            <el-form :model="myform" :inline="true">
                 <el-form-item label="Key Word">
-                    <el-input v-model="form.key_word" placeholder="Key Word"/>
+                    <el-input v-model="myform.key_word" placeholder="Key Word"/>
                 </el-form-item>
                 <el-form-item label="Connect User">
-                    <el-input v-model="form.connect_user" placeholder="Connect User"/>
+                    <el-input v-model="myform.connect_user" placeholder="Connect User"/>
                 </el-form-item>
                 <el-form-item>
                     <el-button type="primary" @click="Search">Search</el-button>
@@ -49,7 +49,7 @@
                         
                 <el-table-column label="Operate">
                     <template v-slot="scope">
-                        <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">delete</el-button>
+                        <el-button type="danger" @click="handleDelete(scope.$index, scope.row)">delete</el-button>
                     </template>
                 </el-table-column>
             </el-table>
@@ -67,7 +67,7 @@ export default{
     data(){
         return{
             tableData:[],
-            form:{
+            myform:{
                 key_word: '',
                 connect_user: '',
             }
@@ -91,14 +91,13 @@ export default{
         },
 
         Search(){
-            form = this.form
-            axios({
-                method: 'get',
-                url: "http://localhost:8090/"+this.page,
-                params:form,
+            var myform = this.myform
+            axios.post("http://localhost:8090/"+this.page+"/Search",{
+                "key_word": myform.key_word,
+                "connect_user": myform.connect_user,
             })
             .then(response => {
-                    console.log('get password data.');
+                    console.log('get password data.',response.data);
                     this.tableData = response.data;
                 },
             )
@@ -109,9 +108,9 @@ export default{
         },
 
         Reset(){
-            this.form.key_word = '';
-            this.form.connect_user = '';
-        }
+            this.myform.key_word = '';
+            this.myform.connect_user = '';
+        },
     }
 }
 </script>

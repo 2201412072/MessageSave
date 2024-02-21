@@ -214,8 +214,8 @@ func main() {
 			var result []map[string]interface{}
 			for _, item := range users {
 				tempMap := map[string]interface{}{
-					"Key Word":     requestMap.Key_word,
-					"Connect User": item,
+					"key_word":     requestMap.Key_word,
+					"connect_user": item,
 				}
 				result = append(result, tempMap)
 			}
