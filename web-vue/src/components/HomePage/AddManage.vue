@@ -2,8 +2,11 @@
   <div id="AddManage" title="Add the passwd you want to save." class="container">
     <span>Add</span>
     <div class="input-container">
+      <span>Key Word</span>
       <el-input class="input" type="text" v-model="key_word" placeholder="please input the key word."></el-input>
+      <span>Password</span>
       <el-input class="input" type="text" v-model="passwd" placeholder="please input the passwd."></el-input>
+      <span>User</span>
       <el-input class="input" type="text" v-model="user" placeholder="please input the user."></el-input>
       <el-button class="input-button" @click="add">Add</el-button>
     </div>
@@ -36,7 +39,9 @@ export default ({
         })
         .then(response => {
                 console.log('added password data successfully.');
-                alert('added successfully.')
+                this.key_word = '';
+                this.passwd = '';
+                this.user = '';
             },
         )
         .catch(response => {

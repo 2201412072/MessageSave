@@ -27,14 +27,18 @@
                 <el-table-column label='Connect User' width="180">
                     <template v-slot="scope"> {{scope.row.connect_user}}</template>
                 </el-table-column>
-                <el-table-column label='Encrypted Password' width="300">
+                
+                <!-- <el-table-column label='Encrypted Password' width="300">
                     <template v-slot="scope">
                         <el-input v-model="scope.row.encrypted_passwd" :disabled=true show-password></el-input>
                     </template>
                 </el-table-column>
                 <el-table-column label='Decrypted Password' width="300">
                     <template v-slot="scope">
-                        <!-- <el-popover
+                        <el-input v-show="scope.row.got" v-bind="scope.row.decrypted_passwd"  :disabled=true show-password></el-input>
+                    </template>
+                </el-table-column>
+                <el-popover
                             :show="scope.row.got & scope.row.display"
                             trigger="click"
                             placement="top">
@@ -42,9 +46,7 @@
                         <i v-show="show" slot="suffix" class="el-input__icon el-icon-search"></i>
                         <el-input v-show="!show" placeholder="password" type="password"></el-input>
                         </el-popover> -->
-                        <el-input v-show="scope.row.got" v-bind="scope.row.decrypted_passwd"  :disabled=true show-password></el-input>
-                    </template>
-                </el-table-column>
+                        
                 <el-table-column label="Operate">
                     <template v-slot="scope">
                         <el-button size="mini" type="danger" @click="handleDelete(scope.$index, scope.row)">delete</el-button>

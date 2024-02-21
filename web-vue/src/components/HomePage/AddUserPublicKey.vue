@@ -30,6 +30,8 @@ export default ({
             })
             .then(response => {
                 console.log('added user public key successfully.');
+                this.user = '';
+                this.public_key = '';
             },
         )
         .catch(error => {

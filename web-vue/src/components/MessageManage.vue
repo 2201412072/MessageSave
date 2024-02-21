@@ -13,6 +13,11 @@ export default {
   components:{
     DataTable,
   },
+  data(){
+      return {
+        name:'MessageManage',
+      };
+  },
   methods:{
     mounted(){
       alert(this.name);
@@ -21,11 +26,6 @@ export default {
     created(){
       alert(this.name);
     },
-    data(){
-    return {
-      name:'MessageManage',
-    }
-  },
   }
 };
 </script>

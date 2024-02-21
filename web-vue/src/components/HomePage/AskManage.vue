@@ -64,13 +64,27 @@ export default ({
       })
         .then(response => {
                 console.log('searched over.',response);
-                this.textContent = response['passwd']
+                this.textContent = response['passwd'];
+                this.key_word = '';
+                this.connect_user = '';
             },
         )
         .catch(response => {
             console.log("error",response);
             alert("search failed.");
         })
+    },
+    copy(){
+      let text = document.getElementById('origin_passwd_div').innerText
+      let InputElement = document.createElement("input")
+      InputElement.value = text;
+      document.body.appendChild(InputElement);
+      InputElement.select(); // 选中文本
+      document.execCommand("copy"); // 执行浏览器复制命令
+      InputElement.remove(); // 移除该临时输入框
+      console.log("copy over.", text);
+
+      this.origin_password = '';
     },
     decrypt(){
       axios.post("http://localhost:8090/DecryptPassword",{
@@ -79,6 +93,7 @@ export default ({
       .then(reponse =>{
         console.log('decrypted successfully.');
         this.decrypted_password = reponse['passwd'];
+        this.encrypted_password = '';
       })
       .catch(response => {
           console.log("error",response);
