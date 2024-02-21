@@ -88,6 +88,24 @@ func main() {
 		ctx.JSON(200, gin.H{"msg": "successfully saved."})
 	})
 
+	r.POST("/AddUserPublicKey", func(ctx *gin.Context) {
+		var requestMap struct {
+			User       string `json:"user"`
+			Public_key string `json:"public_key"`
+		}
+		err := ctx.ShouldBind(&requestMap)
+		if err != nil {
+			fmt.Println("解析请求体失败:", err)
+			ctx.String(http.StatusNotFound, "绑定form失败")
+		}
+		//添加用户公钥
+		flag := middlebox.Add_other_public_key(requestMap.User, requestMap.Public_key)
+		if flag != 1 {
+			return
+		}
+		ctx.JSON(200, gin.H{"msg": "successfully added."})
+	})
+
 	// PassswordManage
 	r.GET("/PasswordManage", func(ctx *gin.Context) {
 		// 获取现有保存的密码数据

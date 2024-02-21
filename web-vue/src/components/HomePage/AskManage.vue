@@ -6,17 +6,35 @@
           <el-input class="input" type="text" v-model="key_word" placeholder="please input the key word." ></el-input>
           <span>Connect User</span>
           <el-input class="input" type="text" v-model="connect_user" placeholder="please input the connect user." ></el-input>
-          <el-button class="input-button" @click="search">Search</el-button>
+          <el-button class="button" @click="search">Search</el-button>
         </div>
-        <div id="text-show" class="text-container">
+        <div id="origin-show" class="text-container">
+          <div class="container-tips">
+            <span>Original Password</span>
+            <el-button class="button" @click="copy">Copy</el-button> 
+          </div>
           <div class="scrollable-container">
             <el-scrollbar class="scrollbar-wrapper">
-              <div class="scrollable-content">
-              {{ textContent }}
+              <div id="origin_passwd_div" class="scrollable-content">
+              {{ origin_password }}
               </div>
             </el-scrollbar>
           </div>
-          <el-button class="copy-button" @click="copy">Copy</el-button>
+        </div>
+
+        <div id="passwd-show" class="text-container">
+          <div class="container-tips">
+            <span>Encrypted Password</span>
+            <el-input class="input" type="text" v-model="encrypted_password" plcaehodler="please input the encrypted password."></el-input>
+            <el-button class="button" @click="decrypt">Decrypt</el-button> 
+          </div>
+          <div class="scrollable-container">
+            <el-scrollbar class="scrollbar-wrapper">
+              <div class="scrollable-content">
+              {{ decrypted_password }}
+              </div>
+            </el-scrollbar>
+          </div>
         </div>
     </div>
 </template>
@@ -32,7 +50,9 @@ export default ({
     return {
       key_word: '',
       connect_user: '',
-      textContent: '',
+      origin_password: '',
+      encrypted_password: '',
+      decrypted_password: '',
     };
   },
   methods: {
@@ -52,8 +72,18 @@ export default ({
             alert("search failed.");
         })
     },
-    copy(){
-      console.log(this.textContent);
+    decrypt(){
+      axios.post("http://localhost:8090/DecryptPassword",{
+        "encrypted_password":this.encrypted_password,
+      })
+      .then(reponse =>{
+        console.log('decrypted successfully.');
+        this.decrypted_password = reponse['passwd'];
+      })
+      .catch(response => {
+          console.log("error",response);
+          alert("search failed.");
+      })
     }
   },
 });
@@ -67,6 +97,12 @@ export default ({
 }
 
 .text-container{
+  /* display: flex; */
+  align-items: center;
+  width: 100%;
+}
+
+.container-tips{
   display: flex;
   align-items: center;
   width: 100%;
@@ -89,7 +125,7 @@ export default ({
   color: #8a8a8a;
 }
 
-.copy-button{
+.button{
   margin-left: auto;
 }
 </style>
