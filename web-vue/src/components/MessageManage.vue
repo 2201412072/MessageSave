@@ -26,7 +26,7 @@ export default {
     created(){
       alert(this.name);
     },
-  }
+  },
 };
 </script>
 

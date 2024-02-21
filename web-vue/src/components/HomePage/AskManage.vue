@@ -1,16 +1,16 @@
 <template>
-    <div id="AskManage" title="Search the password app wanted.">
-        <span>Search</span>
+    <div id="AskManage">
+        <span class="span-tip">Search</span>
         <div id="input-div" class="input-container">
-          <span>Key Word</span>
-          <el-input class="input" type="text" v-model="key_word" placeholder="please input the key word." ></el-input>
-          <span>Connect User</span>
-          <el-input class="input" type="text" v-model="connect_user" placeholder="please input the connect user." ></el-input>
+          <span class="span-tip">Key Word</span>
+          <el-input class="el-input" type="text" v-model="key_word" placeholder="please input the key word." style="width: 250px"></el-input>
+          <span class="span-tip">Connect User</span>
+          <el-input class="el-input" type="text" v-model="connect_user" placeholder="please input the connect user." style="width: 250px"></el-input>
           <el-button class="button" @click="search">Search</el-button>
         </div>
         <div id="origin-show" class="text-container">
           <div class="container-tips">
-            <span>Original Password</span>
+            <span class="span-tip">Original Password</span>
             <el-button class="button" @click="copy">Copy</el-button> 
           </div>
           <div class="scrollable-container">
@@ -24,7 +24,7 @@
 
         <div id="passwd-show" class="text-container">
           <div class="container-tips">
-            <span>Encrypted Password</span>
+            <span class="span-tip">Encrypted Password</span>
             <el-input class="input" type="text" v-model="encrypted_password" plcaehodler="please input the encrypted password."></el-input>
             <el-button class="button" @click="decrypt">Decrypt</el-button> 
           </div>
@@ -32,6 +32,21 @@
             <el-scrollbar class="scrollbar-wrapper">
               <div class="scrollable-content">
               {{ decrypted_password }}
+              </div>
+            </el-scrollbar>
+          </div>
+        </div>
+
+        <div id="other-passwd-decrypt" class="text-container">
+          <div class="container-tips">
+            <span class="span-tip">Other User's Encrypted Password</span>
+            <el-input class="input" type="text" v-model="other_password" plcaehodler="please input the password other user sended to you."></el-input>
+            <el-button class="button" @click="decrypt_other">Decrypt</el-button> 
+          </div>
+          <div class="scrollable-container">
+            <el-scrollbar class="scrollbar-wrapper">
+              <div class="scrollable-content">
+              {{ otehr_decrypted_password }}
               </div>
             </el-scrollbar>
           </div>
@@ -53,6 +68,8 @@ export default ({
       origin_password: '',
       encrypted_password: '',
       decrypted_password: '',
+      other_password: '',
+      otehr_decrypted_password: '',
     };
   },
   methods: {
@@ -99,16 +116,30 @@ export default ({
           console.log("error",response);
           alert("search failed.");
       })
-    }
+    },
+    decrypt_other(){
+      axios.post("http://localhost:8090/DecryptOtherPassword",{
+        "encrypted_password":this.other_password,
+      })
+      .then(reponse =>{
+        console.log('decrypted successfully.');
+        this.other_decrypted_password = reponse['passwd'];
+        this.other_password = '';
+      })
+      .catch(response => {
+          console.log("error",response);
+          alert("search failed.");
+      })
+    },
   },
 });
 </script>
 
 <style scoped>
 .input-container{
-  display: flex;
-  align-items: center;
-  width: 100%;
+    display: flex;
+    align-items: center;
+    width: 500px;
 }
 
 .text-container{
@@ -125,9 +156,10 @@ export default ({
 
 .scrollable-container {
   flex: 1;
-  height: 200px; /* 设置容器的高度 */
+  height: 100px; /* 设置容器的高度 */
   overflow: auto; /* 添加滚动条 */
   border: 1px solid;
+  
 }
 
 .scrollbar-wrapper{
@@ -143,4 +175,5 @@ export default ({
 .button{
   margin-left: auto;
 }
+
 </style>

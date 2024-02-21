@@ -31,10 +31,11 @@ export default {
 </script>
 
 <style scoped>
-.header{
+/* .header{
   background: #a1e9d2;
   height:80px;
-}
+} */
+
 .main{
 
 }

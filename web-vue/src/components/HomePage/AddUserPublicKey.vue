@@ -1,10 +1,10 @@
 <template>
     <div id="AddUserPublicKey" title="Add the user public key." class="container">
-        <span>Add User Public Key</span>
+        <span class="span-tip">Add User Public Key</span>
         <div class="input-container">
-            <span>User</span>
+            <span class="span-tip">User</span>
             <el-input class="input" type="text" v-model="User" placeholder="please input the user."></el-input>
-            <span>Public Key</span>
+            <span class="span-tip">Public Key</span>
             <el-input class="input" type="text" v-model="Public_key" placeholder="please input the public key."></el-input>
             <el-button @click="add">Add</el-button>
         </div>
@@ -25,13 +25,13 @@ export default ({
     methods:{
         add(){
             axios.post("http://localhost:8090/AddUserPublicKey",{
-                'Username':this.user,
-                'Public_key':this.public_key,
+                'Username':this.User,
+                'Public_key':this.Public_key,
             })
             .then(response => {
                 console.log('added user public key successfully.');
-                this.user = '';
-                this.public_key = '';
+                this.User = '';
+                this.Public_key = '';
             },
         )
         .catch(error => {
