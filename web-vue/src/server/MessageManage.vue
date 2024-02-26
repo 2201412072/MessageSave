@@ -13,6 +13,7 @@
                         </el-form-item>
                         <el-form-item>
                             <el-button type="primary" @click="Search">Search</el-button>
+                            <el-button type="primary" @click="SearchAll">SearchAll</el-button>
                             <el-button @click="Reset">Reset</el-button>
                         </el-form-item>
                     </el-form>
