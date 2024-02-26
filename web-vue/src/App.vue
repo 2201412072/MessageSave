@@ -1,24 +1,24 @@
 <template>
   <div class="common-layout">
-    <el-container>
+    <!-- <el-container> -->
       <!-- <el-header class="header"><TopBar /></el-header> -->
-      <el-header class="header">
+      <!-- <el-header class="header">
         <TopBar />
       </el-header>
-      <el-main class="main"><router-view></router-view></el-main> 
-    </el-container>
+      <el-main class="main"><router-view></router-view></el-main>  -->
+      <router-view></router-view>
+    <!-- </el-container> -->
   </div>
   <!-- <HomePage /> -->
 </template>
 
 <script>
-import TopBar from './components/TopBar.vue';
+
 
 
 export default {
   name: 'App',
   components: {
-    TopBar
   },
   data() {
     return {
