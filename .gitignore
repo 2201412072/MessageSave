@@ -1,3 +1,4 @@
 /web-vue/node_modules
+/node_modules
 go.work
 backend-go/data
