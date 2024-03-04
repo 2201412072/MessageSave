@@ -73,16 +73,49 @@ func GetMessage(ctx *gin.Context) {
 // 删除消息
 func DeleteMessage(ctx *gin.Context) {
 	// 解析表单输入
-	// var requestMap model.Message
-
+	var requestMap model.Message
+	ctx.ShouldBind(&requestMap)
+	src_user := requestMap.SrcUser
+	dst_user := requestMap.DstUser
+	key_word := requestMap.KeyWord
+	// 删除消息
+	model.DeleteMessage(src_user, dst_user, key_word)
+	// 回复前端
+	ctx.JSON(200, gin.H{"msg": "delete over."})
 }
 
+// 同意消息
 func AgreeMessage(ctx *gin.Context) {
-
+	// 解析表单输入
+	var requestMap model.Message
+	src_user := requestMap.SrcUser
+	dst_user := requestMap.DstUser
+	key_word := requestMap.KeyWord
+	// 查询对应消息
+	msg, _ := model.GetMessage(src_user, dst_user, key_word)
+	operate := msg.Operate
+	// 生成消息返回对应用户
+	new_msg := model.Message{SrcUser: username, DstUser: src_user, KeyWord: key_word, Operate: "Agree " + operate, Params: ""}
+	PostMessage(new_msg)
+	// 删除该消息
+	model.DeleteMessage(src_user, dst_user, key_word)
 }
 
+// 不同意消息
 func DisagreeMessage(ctx *gin.Context) {
-
+	// 解析表单输入
+	var requestMap model.Message
+	src_user := requestMap.SrcUser
+	dst_user := requestMap.DstUser
+	key_word := requestMap.KeyWord
+	// 查询对应消息
+	msg, _ := model.GetMessage(src_user, dst_user, key_word)
+	operate := msg.Operate
+	// 生成消息返回对应用户
+	new_msg := model.Message{SrcUser: username, DstUser: src_user, KeyWord: key_word, Operate: "Disagree " + operate, Params: ""}
+	PostMessage(new_msg)
+	// 删除该消息
+	model.DeleteMessage(src_user, dst_user, key_word)
 }
 
 func RecvMessage() {

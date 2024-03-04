@@ -9,7 +9,7 @@ var conn *net.TCPConn
 
 // 新建socket连接
 func NewConn(server_addr string, port string) *net.TCPConn {
-	tcpAddr, err := net.ResolveTCPAddr("tcp", server_addr)
+	tcpAddr, err := net.ResolveTCPAddr("tcp4", server_addr)
 	if err != nil {
 		fmt.Println("Connection create error! ", err)
 		return nil

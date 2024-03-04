@@ -35,10 +35,10 @@ func SetupRouter() *gin.Engine {
 	r.POST("/ClientHomePage/PasswordManage/Password-Search", controller.SearchPasssword)
 	// 密码管理删除
 	r.POST("/ClientHomePage/PasswordManage/Password-Delete", controller.DeletePasssword)
-	// // 密码管理结果查询
-	// r.POST("/ClientHomePage/PasswordManage/Result-Search", controller.GetMessage)
-	// // 密码管理结果删除
-	// r.POST("/ClientHomePag/PasswordManage/Result-Delete", controller.DeleteMessage)
+	// 密码管理结果查询
+	r.POST("/ClientHomePage/PasswordManage/Result-Search", controller.GetResearchAns)
+	// 密码管理结果删除
+	r.POST("/ClientHomePag/PasswordManage/Result-Delete", controller.DeleteResearchAns)
 	// 消息管理
 	// 消息查询
 	r.POST("/ClientHomePage/Announcement/Request-Search", controller.GetMessage)
