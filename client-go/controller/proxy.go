@@ -137,6 +137,10 @@ func RecvMessage() {
 		for msg := range messages {
 			msgQueue.PushBack(msg)
 		}
+		//这里是处理message的函数，要求能够针对不同类型的message来修改不同数据库
+		for msg := range message {
+			deal_messages(msg)
+		}
 		// 后端通知前端msgQueue更新
 		// 只设置发送数据，不添加事件名
 		es.SendEventMessage(fmt.Sprintf("send data: %s", time.Now().Format("2006-01-02 15:04:05")), "time", "")

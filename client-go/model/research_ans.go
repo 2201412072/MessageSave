@@ -20,3 +20,8 @@ func AddResearchAns(src_user string, dst_user string, application string, stage 
 func DeleteResearchAns(src_user string, dst_user string, application string) int {
 	return 1
 }
+
+func ChangeResearchAns(src_user string, dst_user string, application string, stage string, password string) int {
+	//该函数用于修改状态，它表示一个src_user,dst_user_application的键值的状态被修改为stage，密码被修改为password
+	return 1
+}
