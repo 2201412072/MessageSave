@@ -5,6 +5,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net"
+	"server-go/model"
 )
 
 var readers map[string]*bufio.Reader
@@ -52,6 +53,9 @@ func ConnAccept(listener net.Listener) {
 			message, _ := reader.ReadString('\n')
 			fmt.Println("Get %s message: %s", user, message)
 			// 处理接收到的消息
+			var msg model.Message
+			json.Unmarshal([]byte(message), &msg)
+			deal_messages(msg)
 		}
 	}()
 }

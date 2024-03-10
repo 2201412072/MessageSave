@@ -32,7 +32,7 @@ func SetupDB() {
 // 初始化数据库各张表
 func DB_init_table() {
 	database.AutoMigrate(&Message{})
-	database.AutoMigrate(&Password{})
+	database.AutoMigrate(&UserPassword{})
 	database.AutoMigrate(&Public_keys{})
 	database.AutoMigrate(&ResearchAns{})
 }

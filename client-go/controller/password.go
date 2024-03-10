@@ -18,8 +18,8 @@ func SavePassword(ctx *gin.Context) {
 	application := requestMap.Application
 	// 对密码进行本地加密
 	other_public_key, _ := GetPublicKeyByUser(user) // proxy.GetPublicKey(user)
-	passwd1, _ := util.EncryptUTFString(passwd, public_key)
-	passwd2, _ = util.Block_encrypt(passwd1, other_public_key)
+	passwd1, _ := util.EncryptUTFString(passwd, Public_key)
+	passwd2, _ := util.Block_encrypt(passwd1, other_public_key)
 
 	single_key := ""
 	// 存储至数据库
@@ -45,5 +45,16 @@ func UsePassword(ctx *gin.Context) {
 
 // 解密一次加密的密文，返回真实密码
 func DecryptPassword1(message string) string {
-	return ""
+	//这里假定服务器向客户端传送的依旧像第一版那样，是base64字符串。（但事实上不用，直接传二进制值就行了）
+	temp_bytes_data, flag := util.Base_string2bytes(message)
+	if flag != 1 {
+		return ""
+	}
+	bytes_data, _ := util.Block_decrypt(temp_bytes_data, Private_key)
+	string_data, flag := util.Base_bytes2utf_string(bytes_data)
+	if flag != 1 {
+		return ""
+	}
+	return string_data
+
 }

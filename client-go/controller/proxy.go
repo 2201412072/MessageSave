@@ -134,11 +134,11 @@ func RecvMessage() {
 			fmt.Println("Error! ", err)
 			return
 		}
-		for msg := range messages {
+		for _, msg := range messages {
 			msgQueue.PushBack(msg)
 		}
 		//这里是处理message的函数，要求能够针对不同类型的message来修改不同数据库
-		for msg := range message {
+		for _, msg := range messages {
 			deal_messages(msg)
 		}
 		// 后端通知前端msgQueue更新

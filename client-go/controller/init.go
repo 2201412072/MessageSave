@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"client-go/model"
 	"crypto/rand"
 	"crypto/rsa"
 	"crypto/x509"
@@ -12,8 +13,8 @@ import (
 
 var public_key_path string = "./data/master-public.pem"
 var private_key_path string = "./data/master-private.pem"
-var private_key *rsa.PrivateKey
-var public_key *rsa.PublicKey
+var Private_key *rsa.PrivateKey
+var Public_key *rsa.PublicKey
 var username string = "user"
 var server_addr string = "127.0.0.1"
 var port string = "8090"
@@ -116,7 +117,7 @@ func LoadKeys() int {
 
 		// 解码和解析私钥
 		privateKeyBlock, _ := pem.Decode(privateKeyBytes)
-		private_key, err = x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
+		Private_key, err = x509.ParsePKCS1PrivateKey(privateKeyBlock.Bytes)
 		if err != nil {
 			//panic(err)
 			return 0
@@ -142,7 +143,7 @@ func LoadKeys() int {
 
 		// 解码和解析公钥
 		publicKeyBlock, _ := pem.Decode(publicKeyBytes)
-		public_key, err = x509.ParsePKCS1PublicKey(publicKeyBlock.Bytes)
+		Public_key, err = x509.ParsePKCS1PublicKey(publicKeyBlock.Bytes)
 		if err != nil {
 			panic(err)
 		}
@@ -163,5 +164,5 @@ func Init() {
 	// 加载公钥私钥
 	LoadKeys()
 	// 加载数据库？
-
+	model.SetupDB()
 }

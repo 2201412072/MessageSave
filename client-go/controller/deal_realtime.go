@@ -28,6 +28,11 @@ func deal_messages(msg model.Message) int {
 	default:
 		panic("接收到的信息类型无法确认")
 	}
+	if flag == 1 {
+		return 1
+	} else {
+		return 0
+	}
 }
 func deal_message_DecryptRequest(msg model.Message) int {
 	//该函数用于处理DecryptRequest请求，具体操作就是将该信息加入message数据库
@@ -41,5 +46,5 @@ func deal_message_EncryptAnnocement(msg model.Message) int {
 
 func deal_message_DecryptMessage(msg model.Message) int {
 	//该函数用于处理DecryptMessage请求，具体操作就是修改查询结果表中的信息，将状态改为已完成，然后将密码修改
-	return model.ChangeResearchAns(msg.SrcUser, msg.DstUser, msg.KeyWord, 1, msg.Params)
+	return model.ChangeResearchAns(msg.SrcUser, msg.DstUser, msg.KeyWord, "has complete", msg.Params)
 }
