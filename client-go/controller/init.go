@@ -15,9 +15,10 @@ var public_key_path string = "./data/master-public.pem"
 var private_key_path string = "./data/master-private.pem"
 var Private_key *rsa.PrivateKey
 var Public_key *rsa.PublicKey
-var username string = "user"
+var username string = "test1"
 var server_addr string = "127.0.0.1"
-var port string = "8090"
+var port string = "8091"
+var ResponseChan = make(chan string) //该通道用于子协程传递回应消息
 
 // 修改公钥保存路径
 func Change_public_key_path(key_path string) int {

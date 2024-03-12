@@ -17,6 +17,8 @@ import (
 var client *rpc.Client
 var msgChannel chan string
 var msgQueue list.List
+
+// var ResponseMsgQueue list.List //这是回应消息队列
 var es eventsource.EventSource
 var err error
 
@@ -28,8 +30,13 @@ func InitProxy() {
 	// 	fmt.Println("Error! ", err)
 	// }
 	util.NewConn(server_addr, port)
+	temp := make(map[string]string)
+	temp["user"] = username
+	tempbyte, _ := json.Marshal(temp)
+	util.ConnSend(string(tempbyte))
 	// 创建SSE连接，从服务器获取消息并传给前端
 	es = util.NewEventSource("proxy_message", "/ProxyMessage/events", RecvMessage)
+
 	// // 获取服务器端积压的数据
 	// messages, flag := GetMessage()
 }
@@ -129,10 +136,20 @@ func RecvMessage() {
 	for {
 		var messages []model.Message
 		msg_json := util.ConnRecive()
+		fmt.Println("msg:", msg_json)
+		if len(msg_json) == 0 {
+			//目前看的是keep alive报文，不用管
+			continue
+		}
 		err := json.Unmarshal([]byte(msg_json), &messages)
 		if err != nil {
-			fmt.Println("Error! ", err)
-			return
+			//说明是回应消息，目前的处理方式是：将其直接通过通道送入
+			ResponseChan <- msg_json
+			continue
+			// else {
+			// 	fmt.Println("Error:", err)
+			// 	return
+			// }
 		}
 		for _, msg := range messages {
 			msgQueue.PushBack(msg)
@@ -161,7 +178,8 @@ func RecvMessage() {
 // 发送消息中转服务器至关联用户
 func PostMessage(message model.Message) int {
 	meesageData, _ := json.Marshal(message)
-	message_json := string(meesageData)
+	//该\n是由于服务器接收数据包时，按照\n结尾
+	message_json := string(meesageData) + "\n"
 	util.ConnSend(message_json)
 	return 1
 }

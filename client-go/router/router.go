@@ -3,12 +3,14 @@ package router
 import (
 	"client-go/configs"
 	"client-go/controller"
+	"client-go/util"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+	r.Use(util.CORSHandler()) // 设置全局跨域访问
 
 	// 注册
 	r.POST("/Register", controller.Register)

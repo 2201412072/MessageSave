@@ -16,7 +16,7 @@ func SetupDB() {
 	password := "message_save"
 	host := "localhost"
 	port := "3306"
-	dbname := "MessageSaveDB"
+	dbname := "MessageSaveDBServer"
 	charset := "utf8"
 	dsn := fmt.Sprintf("%s:%s@tcp(%s:%s)/%s?charset=%s&parseTime=True&loc=Local", user, password, host, port, dbname, charset)
 

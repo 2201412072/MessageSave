@@ -8,22 +8,23 @@ import (
 	"server-go/model"
 )
 
-var readers map[string]*bufio.Reader
-var writers map[string]*bufio.Writer
+var readers = make(map[string]*bufio.Reader)
+var writers = make(map[string]*bufio.Writer)
+var connmap = make(map[string]*net.Conn) //该对象用于记录每个用户的连接，用于后续的连接释放
 
 func InitProxy() {
+	fmt.Println("InitProxy:", server_addr+":"+port)
 	// 监听新连接
 	listener, err := net.Listen("tcp", server_addr+":"+port)
+	fmt.Println(listener)
 	if err != nil {
 		fmt.Println("Listen Error! ", err)
 	}
 	defer listener.Close()
 	// 不断接受客户端连接
-	go func() {
-		for {
-			ConnAccept(listener)
-		}
-	}()
+	for {
+		ConnAccept(listener)
+	}
 }
 
 // 接受客户端连接
@@ -32,7 +33,9 @@ func ConnAccept(listener net.Listener) {
 	if err != nil {
 		fmt.Println("Failed to create connection. ", err)
 	}
-	defer conn.Close()
+	//不能延时释放它，因为运行到函数最后，会开一个新协程，此时就会执行defer，就把conn删掉了，所以最好能够在客户端断开连接以后再close
+	//但是单纯先记录conn，再删掉conn不行，因为删conn时会将该tcp连接断开，所以应该是指针实现
+	//defer conn.Close()
 	// 获取客户端用户名
 	reader := bufio.NewReader(conn)
 	buffer := make([]byte, 1024)
@@ -40,9 +43,12 @@ func ConnAccept(listener net.Listener) {
 	if err != nil {
 		fmt.Println("Socket recive error ", err)
 	}
-	var userinfo map[string]string
+
+	var userinfo = make(map[string]string)
 	json.Unmarshal(buffer[:n], &userinfo)
+	fmt.Println(userinfo)
 	user := userinfo["user"]
+	connmap[user] = &conn
 	// 准备接收消息
 	writer := bufio.NewWriter(conn)
 	readers[user] = reader
@@ -51,7 +57,13 @@ func ConnAccept(listener net.Listener) {
 	go func() {
 		for {
 			message, _ := reader.ReadString('\n')
-			fmt.Println("Get %s message: %s", user, message)
+			if len(message) == 0 {
+				//可能是tcp相关控制的包，目前发现的情况有，tcp链路被断开，则message为空
+				ConnDelete(user)
+				fmt.Println("用户 ", user, " 中断了通话")
+				break
+			}
+			fmt.Printf("Get %v len %v message: %v \n", user, len(message), message)
 			// 处理接收到的消息
 			var msg model.Message
 			json.Unmarshal([]byte(message), &msg)
@@ -62,7 +74,14 @@ func ConnAccept(listener net.Listener) {
 
 // 发送消息
 func ConnSend(user string, msg string) {
+	fmt.Println("向", user, "发送消息:", msg)
 	writer := writers[user]
 	writer.Write([]byte(msg))
 	writer.Flush()
+}
+
+// 删除该连接
+func ConnDelete(user string) {
+	(*connmap[user]).Close()
+	delete(connmap, user)
 }

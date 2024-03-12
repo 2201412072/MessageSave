@@ -1,6 +1,7 @@
 package controller
 
 import (
+	"fmt"
 	"server-go/model"
 	"server-go/util"
 )
@@ -20,6 +21,7 @@ import (
 
 func deal_messages(msg model.Message) int {
 	//该函数用于判断不同类型的消息，然后将其转给对应类型的处理函数，返回消息处理的结果，1代表正确
+	fmt.Println("deal_messages")
 	var flag int
 	switch msg.Operate {
 	case "Login2Server":

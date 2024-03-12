@@ -18,6 +18,9 @@
                 <el-button type="primary" @click="Add">Add</el-button>
                 <el-button @click="Reset">Reset</el-button>
             </el-form-item>
+            <el-form-item label="Test">
+                {{this.page}} {{page}}
+            </el-form-item>
         </el-form>
     </div>
 </template>
@@ -29,7 +32,19 @@
 
 const axios = require('axios');
 export default{
-    props:['page','myfunction'],
+    //props:['page','myfunction'],
+    props:{
+        //'page':
+        page:
+        {
+            type:String,
+            default:"wrong"
+        },
+        myfunction:{
+            type:Function,
+            required:false
+        }
+    },
     components:{
         //MessageBox
     },

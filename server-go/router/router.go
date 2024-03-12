@@ -2,12 +2,14 @@ package router
 
 import (
 	"server-go/controller"
+	"server-go/util"
 
 	"github.com/gin-gonic/gin"
 )
 
 func SetupRouter() *gin.Engine {
 	r := gin.Default()
+	r.Use(util.CORSHandler()) // 设置全局跨域访问
 
 	r.POST("/ServerHomePage/MessageManage/Message-Search", controller.GetMessage)
 	r.POST("/ServerHomePage/MessageManage/Message-Delete", controller.DeleteMessage)

@@ -7,7 +7,7 @@ import (
 	"gopkg.in/antage/eventsource.v1"
 )
 
-var eventsourceMap map[string]eventsource.EventSource
+var eventsourceMap = make(map[string]eventsource.EventSource)
 
 func NewEventSource(key string, url string, f func()) eventsource.EventSource {
 	es := eventsource.New(nil, nil)

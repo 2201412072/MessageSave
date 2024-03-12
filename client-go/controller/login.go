@@ -12,8 +12,8 @@ import (
 func Register(ctx *gin.Context) {
 	//向服务器发送用户名和密码
 	var requestMap struct {
-		username string `json:"username"`
-		password string `json:"password"`
+		Username string `json:"username"`
+		Password string `json:"password"`
 	}
 	err := ctx.ShouldBind(&requestMap)
 	if err != nil {
@@ -21,20 +21,28 @@ func Register(ctx *gin.Context) {
 		ctx.String(http.StatusNotFound, "绑定form失败")
 	}
 	var sendMessage model.Message
-	sendMessage.SrcUser = requestMap.username
+	sendMessage.SrcUser = requestMap.Username
 	sendMessage.DstUser = "server"
-	sendMessage.KeyWord = requestMap.password
+	sendMessage.KeyWord = requestMap.Password
 	sendMessage.Operate = "Register2Server"
 	PostMessage(sendMessage)
-	ctx.JSON(200, gin.H{"msg": "message sent successfully"})
+	response := <-ResponseChan
+	switch response {
+	case "RegisterError1":
+		ctx.JSON(401, gin.H{"msg": "用户名已存在", "result": 0})
+	case "RegisterPass":
+		ctx.JSON(200, gin.H{"msg": "注册成功", "result": 1})
+	default:
+		ctx.JSON(401, gin.H{"msg": "发生错误", "result": 0})
+	}
 }
 
 // 登录
 func Login(ctx *gin.Context) {
 	//向服务器发送用户名和密码
 	var requestMap struct {
-		username string `json:"username"`
-		password string `json:"password"`
+		Username string `json:"username"`
+		Password string `json:"password"`
 	}
 	err := ctx.ShouldBind(&requestMap)
 	if err != nil {
@@ -42,10 +50,21 @@ func Login(ctx *gin.Context) {
 		ctx.String(http.StatusNotFound, "绑定form失败")
 	}
 	var sendMessage model.Message
-	sendMessage.SrcUser = requestMap.username
+	sendMessage.SrcUser = requestMap.Username
 	sendMessage.DstUser = "server"
-	sendMessage.KeyWord = requestMap.password
+	sendMessage.KeyWord = requestMap.Password
 	sendMessage.Operate = "Login2Server"
 	PostMessage(sendMessage)
-	ctx.JSON(200, gin.H{"msg": "message sent successfully"})
+	response := <-ResponseChan
+	fmt.Println("response:", response)
+	switch response {
+	case "LoginError1":
+		ctx.JSON(401, gin.H{"msg": "用户名或密码错误", "result": 0})
+	case "LoginError2":
+		ctx.JSON(401, gin.H{"msg": "用户名或密码错误", "result": 0})
+	case "LoginPass":
+		ctx.JSON(200, gin.H{"msg": "登录成功", "result": 1, "whatpage": "client"})
+	default:
+		ctx.JSON(401, gin.H{"msg": "发生错误", "result": 0})
+	}
 }
