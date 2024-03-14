@@ -16,16 +16,38 @@ func SavePassword(ctx *gin.Context) {
 	user := requestMap.User
 	passwd := requestMap.Password
 	application := requestMap.Application
+	// user := requestMap.Connect_user
+	// passwd := requestMap.Password
+	// application := requestMap.App
 	// 对密码进行本地加密
-	other_public_key, _ := GetPublicKeyByUser(user) // proxy.GetPublicKey(user)
-	passwd1, _ := util.EncryptUTFString(passwd, Public_key)
-	passwd2, _ := util.Block_encrypt(passwd1, other_public_key)
+	other_public_key, flag := GetPublicKeyByUser(user) // proxy.GetPublicKey(user)
+	//flag=0出bug了，=1为正常，=2表示服务器没找到该用户
+	switch flag {
+	case 0:
+		ctx.JSON(401, gin.H{"msg": "bug!!!"})
+	case 1:
+		{
+			passwd1, _ := util.EncryptUTFString(passwd, Public_key)
+			passwd2, _ := util.Block_encrypt(passwd1, other_public_key)
 
-	single_key := ""
-	// 存储至数据库
-	model.AddPassword(application, user, passwd2, single_key)
-	// 回复前端
-	ctx.JSON(200, gin.H{"msg": "password saved."})
+			single_key := ""
+			// 存储至数据库
+			model.AddPassword(application, user, passwd2, single_key)
+			//将该加密信息发送给服务器，然后服务器代为转发给对应的客户端
+			var message model.Message
+			message.DstUser = user
+			message.Operate = "EncryptAnnocement2Server"
+			message.KeyWord = application
+			PostMessage(message)
+			//接收服务器返回的信息，但是我们不关心服务器添加没添加这个消息
+			_ = <-ResponseChan
+			// 回复前端
+			ctx.JSON(200, gin.H{"msg": "password saved."})
+		}
+
+	case 2:
+		ctx.JSON(401, gin.H{"msg": "服务器没找到该用户"})
+	}
 }
 
 // 使用密码
@@ -35,6 +57,8 @@ func UsePassword(ctx *gin.Context) {
 	ctx.ShouldBind(&requestMap)
 	user := requestMap.User
 	application := requestMap.Application
+	// user := requestMap.Connect_user
+	// application := requestMap.App
 	// 获取加密密码
 	passwd2, _ := model.GetPasswordString(user, application)
 	// 消息代理向服务器发送关联用户解密请求

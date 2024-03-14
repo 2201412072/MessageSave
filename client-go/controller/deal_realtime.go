@@ -26,11 +26,6 @@ func deal_messages(msg model.Message) int {
 	//fmt.Println("deal_messages:", msg)
 	var flag int
 	switch msg.Operate {
-	case "RegisterPass":
-
-		return 1
-	case "RegisterError1":
-		//ctx.JSON(401, gin.H{"msg": "用户名或密码错误", "result": 0})
 	case "DecryptRequest2Client":
 		flag = deal_message_DecryptRequest(msg)
 	case "EncryptAnnocement2Client":

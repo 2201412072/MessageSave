@@ -48,6 +48,8 @@ func ConnAccept(listener net.Listener) {
 	json.Unmarshal(buffer[:n], &userinfo)
 	fmt.Println(userinfo)
 	user := userinfo["user"]
+	//标志着该用户在线
+	model.UpdateStageUserPassword(user, 1)
 	connmap[user] = &conn
 	// 准备接收消息
 	writer := bufio.NewWriter(conn)
@@ -60,6 +62,8 @@ func ConnAccept(listener net.Listener) {
 			if len(message) == 0 {
 				//可能是tcp相关控制的包，目前发现的情况有，tcp链路被断开，则message为空
 				ConnDelete(user)
+				//标志着该用户离线
+				model.UpdateStageUserPassword(user, 0)
 				fmt.Println("用户 ", user, " 中断了通话")
 				break
 			}
@@ -70,6 +74,16 @@ func ConnAccept(listener net.Listener) {
 			deal_messages(msg)
 		}
 	}()
+}
+
+// 发送消息至关联用户
+func PostMessage(message model.Message) int {
+	if message.SrcUser == "" {
+		message.SrcUser = "server"
+	}
+	meesageData, _ := json.Marshal(message)
+	ConnSend(message.DstUser, string(meesageData))
+	return 1
 }
 
 // 发送消息

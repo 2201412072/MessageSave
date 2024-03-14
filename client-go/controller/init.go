@@ -160,6 +160,24 @@ func LoadKeys() int {
 	return 1
 }
 
+func PublicKeyBytesFromFile() ([]byte, int) {
+	//该函数用于取出本地公钥的byte形式，用于向服务器传递
+	publicKeyFile, err := os.Open(public_key_path)
+	if err != nil {
+		//公钥地址不存在
+		return make([]byte, 0), 0
+	}
+	defer publicKeyFile.Close()
+
+	publicKeyBytes, err := io.ReadAll(publicKeyFile)
+	if err != nil {
+		//读取公钥文件出现错误
+		return make([]byte, 0), 2
+	}
+	return publicKeyBytes, 1
+
+}
+
 func Init() {
 	// 加载配置文件
 	// 加载公钥私钥

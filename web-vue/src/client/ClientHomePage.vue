@@ -6,8 +6,8 @@
             </el-header>
             <el-main class="main">
                 <div id="main-function">
-                    <AddPasswordUI :page="ClientHomePage"></AddPasswordUI>
-                    <SearchPasswordUI :page="ClientHomePage"></SearchPasswordUI>
+                    <AddPasswordUI page="ClientHomePage" myfunction="tempfunction"></AddPasswordUI>
+                    <SearchPasswordUI page="ClientHomePage" myfunction="tempfunction"></SearchPasswordUI>
                 </div>
             </el-main> 
         </el-container>
@@ -24,6 +24,9 @@ export default ({
   components: {
     TopBar,AddPasswordUI,SearchPasswordUI,
   },
+  methods:{
+    tempfunction(){}
+  }
 });
 </script>
 

@@ -10,7 +10,6 @@ import (
 	"net/rpc"
 	"time"
 
-	"github.com/gin-gonic/gin"
 	"gopkg.in/antage/eventsource.v1"
 )
 
@@ -30,12 +29,34 @@ func InitProxy() {
 	// 	fmt.Println("Error! ", err)
 	// }
 	util.NewConn(server_addr, port)
+	//发送用户名
 	temp := make(map[string]string)
 	temp["user"] = username
 	tempbyte, _ := json.Marshal(temp)
 	util.ConnSend(string(tempbyte))
+
 	// 创建SSE连接，从服务器获取消息并传给前端
 	es = util.NewEventSource("proxy_message", "/ProxyMessage/events", RecvMessage)
+
+	go func() {
+		//之所以新开一个线程，是因为recvmessage在initproxy线程，如果不新开，那么没办法从recvmessage那里收到消息
+		//发送自身公钥
+		var message model.Message
+		message.SrcUser = username
+		message.DstUser = "server"
+		message.Operate = "PublicKeyRecord2Server"
+		tempbyte, _ = PublicKeyBytesFromFile()
+		message.Params, _ = util.Bytes2base_string(tempbyte)
+		PostMessage(message)
+		//接收来自服务器的反馈，即服务器是否正确接收到了公钥
+		response := <-ResponseChan
+		switch response {
+		case "PublicKeyRecordError1":
+			fmt.Println("服务器已存在该公钥，此次发送无效")
+		case "PublicKeyRecordPass":
+			fmt.Println("服务器接收成功")
+		}
+	}()
 
 	// // 获取服务器端积压的数据
 	// messages, flag := GetMessage()
@@ -51,79 +72,6 @@ func InitProxy() {
 // 	}
 // 	return messages, 1
 // }
-
-// 获取未处理的消息
-func GetMessage(ctx *gin.Context) {
-	// 获取本地缓存的未处理的消息
-	local_messages, _ := model.GetMessages()
-	// 获取服务器消息并缓存
-	var net_messages []model.Message
-	util.ConnSend("GetMessageByUser " + username)
-	msg_json := util.ConnRecive()
-	err := json.Unmarshal([]byte(msg_json), &net_messages)
-	if err != nil {
-		fmt.Println("Error! ", err)
-	}
-	for _, msg := range net_messages { // 缓存
-		model.AddMessage(msg)
-	}
-	// 合并两堆消息
-	messages := append(local_messages, net_messages...)
-	// 消息队列
-	// for _,msg := range messages {
-	// 	msgQueue.PushBack(msg)
-	// }
-	// 回复前端
-	ctx.JSON(200, messages)
-}
-
-// 删除消息
-func DeleteMessage(ctx *gin.Context) {
-	// 解析表单输入
-	var requestMap model.Message
-	ctx.ShouldBind(&requestMap)
-	src_user := requestMap.SrcUser
-	dst_user := requestMap.DstUser
-	key_word := requestMap.KeyWord
-	// 删除消息
-	model.DeleteMessage(src_user, dst_user, key_word)
-	// 回复前端
-	ctx.JSON(200, gin.H{"msg": "delete over."})
-}
-
-// 同意消息
-func AgreeMessage(ctx *gin.Context) {
-	// 解析表单输入
-	var requestMap model.Message
-	src_user := requestMap.SrcUser
-	dst_user := requestMap.DstUser
-	key_word := requestMap.KeyWord
-	// 查询对应消息
-	msg, _ := model.GetMessage(src_user, dst_user, key_word)
-	operate := msg.Operate
-	// 生成消息返回对应用户
-	new_msg := model.Message{SrcUser: username, DstUser: src_user, KeyWord: key_word, Operate: "Agree " + operate, Params: ""}
-	PostMessage(new_msg)
-	// 删除该消息
-	model.DeleteMessage(src_user, dst_user, key_word)
-}
-
-// 不同意消息
-func DisagreeMessage(ctx *gin.Context) {
-	// 解析表单输入
-	var requestMap model.Message
-	src_user := requestMap.SrcUser
-	dst_user := requestMap.DstUser
-	key_word := requestMap.KeyWord
-	// 查询对应消息
-	msg, _ := model.GetMessage(src_user, dst_user, key_word)
-	operate := msg.Operate
-	// 生成消息返回对应用户
-	new_msg := model.Message{SrcUser: username, DstUser: src_user, KeyWord: key_word, Operate: "Disagree " + operate, Params: ""}
-	PostMessage(new_msg)
-	// 删除该消息
-	model.DeleteMessage(src_user, dst_user, key_word)
-}
 
 func RecvMessage() {
 	// 代理启动后接收服务器传来的消息（不知道怎么实现才好，就先还是查询message表吧）
@@ -177,6 +125,9 @@ func RecvMessage() {
 
 // 发送消息中转服务器至关联用户
 func PostMessage(message model.Message) int {
+	if message.SrcUser == "" {
+		message.SrcUser = username
+	}
 	meesageData, _ := json.Marshal(message)
 	//该\n是由于服务器接收数据包时，按照\n结尾
 	message_json := string(meesageData) + "\n"
@@ -187,16 +138,31 @@ func PostMessage(message model.Message) int {
 // 查询自身数据库有无对应公钥
 func GetPublicKeyByUser(user string) (*rsa.PublicKey, int) {
 	public_key, _ := model.GetPublicKeyByUser(user)
-	if public_key == nil {
+	if len(public_key) == 0 {
 		// 假如没有，向服务器请求
-		message := model.Message{SrcUser: username, DstUser: user, KeyWord: "", Operate: "Search PublicKey", Params: ""}
+		message := model.Message{SrcUser: username, DstUser: user, KeyWord: "", Operate: "PublicKeyRequest2Server", Params: ""}
 		PostMessage(message)
-		recv_json := util.ConnRecive()
-		var recv_msg model.Message
-		json.Unmarshal([]byte(recv_json), &recv_msg)
-		public_key = []byte(recv_msg.Params)
-		// 存储至数据库
-		model.AddPublicKey(user, public_key)
+		// recv_json := util.ConnRecive()
+		// var recv_msg model.Message
+		// json.Unmarshal([]byte(recv_json), &recv_msg)
+		// public_key = []byte(recv_msg.Params)
+		//此处在发送消息后，需要接收回应消息
+		response := <-ResponseChan
+		fmt.Println("response:", response)
+		if response == "PublicKeyRequestError1" {
+			//服务器没有存储该用户的公钥，完犊子了
+			return nil, 2
+		} else if response == "PublicKeyRequestPass" {
+			response := <-ResponseChan //此时收的数据才是真正的公钥
+			temp_public_key, _ := util.Base_string2bytes(response)
+			// 存储至数据库
+			model.AddPublicKey(user, temp_public_key)
+			public_key_ans, _ := util.PublicKey_from_bytes(public_key)
+			return public_key_ans, 1
+		} else {
+			return nil, 0
+		}
+
 	}
 	public_key_ans, _ := util.PublicKey_from_bytes(public_key)
 	return public_key_ans, 1
@@ -204,7 +170,7 @@ func GetPublicKeyByUser(user string) (*rsa.PublicKey, int) {
 
 // 请求指定用户解码
 func RequireDecrypt(user string, application string, passwd2 string) int {
-	message := model.Message{SrcUser: username, DstUser: user, KeyWord: application, Operate: "Decrypt", Params: ""}
+	message := model.Message{SrcUser: username, DstUser: user, KeyWord: application, Operate: "DecryptRequest2Server", Params: passwd2}
 	PostMessage(message)
 	return 1
 }
