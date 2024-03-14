@@ -16,7 +16,8 @@ import (
 4、发送过来的解密请求信息（客户端1希望向客户端2发送解密请求，在服务器端中转）,Operate=DecryptRequest2Server
 5、发送过来的加密通知（客户端1通过客户端2公钥加密，向客户端2发送该通知，在服务器端中转），Operate=EncryptAnnocement2Server
 6、回复的初步解密密文（客户端1让客户端2解密，客户端2发送回初步解密密文，在服务器端中转），Operate=DecryptMessage2Server
-7、发送过来的公钥信息，服务器需要记录一下，Operate=PublicKeyRecord2Server
+7、返回的不同意解密的信息（客户端1希望向客户端2发送解密请求，客户端2不同意，将该信息返回给客户端1，在服务器端中转），Operate=DecryptRequestDisAgree2Server
+8、发送过来的公钥信息，服务器需要记录一下，Operate=PublicKeyRecord2Server
 */
 
 func deal_messages(msg model.Message) int {
@@ -38,6 +39,8 @@ func deal_messages(msg model.Message) int {
 		flag = deal_message_DecryptMessage(msg)
 	case "PublicKeyRecord2Server":
 		flag = deal_message_PublicKeyRecord(msg)
+	case "DecryptRequestDisAgree2Server":
+		flag = deal_message_DecryptRequestDisAgree(msg)
 	default:
 		panic("接收到的信息类型无法确认")
 	}
@@ -96,7 +99,6 @@ func deal_message_PublicKeyRequest(msg model.Message) int {
 
 func deal_message_DecryptRequest(msg model.Message) int {
 	//该函数处理DecryptRequest2Server，具体操作为加入暂存消息表中,如果目标用户连着服务器，则顺便转发给它
-	//目前只完成了加入表中，不准备转发
 	err := model.AddMessage(msg)
 	if err != 1 {
 
@@ -105,12 +107,16 @@ func deal_message_DecryptRequest(msg model.Message) int {
 		return 0
 	}
 	ConnSend(msg.SrcUser, "AddMessagePass")
+	msg.Operate = "DecryptRequest2Client"
+	if send_realtime_messge(msg) == 1 {
+		//在线，发送过去了
+		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord)
+	}
 	return 1
 }
 
 func deal_message_EncryptAnnocement(msg model.Message) int {
 	//该函数处理EncryptAnnocement2Server，具体操作为加入暂存消息表中,如果目标用户连着服务器，则顺便转发给它
-	//目前只完成了加入表中，不准备转发
 	err := model.AddMessage(msg)
 	if err != 1 {
 		//加入出错
@@ -118,12 +124,16 @@ func deal_message_EncryptAnnocement(msg model.Message) int {
 		return 0
 	}
 	ConnSend(msg.SrcUser, "AddMessagePass")
+	msg.Operate = "EncryptAnnocement2Client"
+	if send_realtime_messge(msg) == 1 {
+		//在线，发送过去了
+		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord)
+	}
 	return 1
 }
 
 func deal_message_DecryptMessage(msg model.Message) int {
 	//该函数处理DecryptMessage2Server，具体操作为加入暂存消息表中,如果目标用户连着服务器，则顺便转发给它
-	//目前只完成了加入表中，不准备转发
 	err := model.AddMessage(msg)
 	if err != 1 {
 		//加入出错
@@ -131,6 +141,11 @@ func deal_message_DecryptMessage(msg model.Message) int {
 		return 0
 	}
 	ConnSend(msg.SrcUser, "AddMessagePass")
+	msg.Operate = "DecryptMessage2Client"
+	if send_realtime_messge(msg) == 1 {
+		//在线，发送过去了
+		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord)
+	}
 	return 1
 }
 
@@ -142,6 +157,37 @@ func deal_message_PublicKeyRecord(msg model.Message) int {
 		ConnSend(msg.SrcUser, "PublicKeyRecordError1")
 		return 0
 	}
+	temp_public_key, _ := util.Base_string2bytes(msg.Params)
+	model.AddPublicKey(msg.SrcUser, temp_public_key)
 	ConnSend(msg.SrcUser, "PublicKeyRecordPass")
+	return 1
+}
+
+func send_realtime_messge(msg model.Message) int {
+	//该函数用于判断服务器是否连接着目标用户，如果连接就将该消息发送过去
+	temp, _ := model.GetUserPassword(msg.DstUser)
+	if temp.Stage == 0 {
+		//离线
+		return 0
+	} else {
+		//在线
+		return PostMessage(msg)
+	}
+}
+
+func deal_message_DecryptRequestDisAgree(msg model.Message) int {
+	//该函数用来处理DecryptRequestDisAgree2Server，具体操作为加入暂存消息表中,如果目标用户连着服务器，则顺便转发给它
+	err := model.AddMessage(msg)
+	if err != 1 {
+		//加入出错
+		ConnSend(msg.SrcUser, "AddMessageError1")
+		return 0
+	}
+	ConnSend(msg.SrcUser, "AddMessagePass")
+	msg.Operate = "DecryptRequestDisAgree2Client"
+	if send_realtime_messge(msg) == 1 {
+		//在线，发送过去了
+		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord)
+	}
 	return 1
 }

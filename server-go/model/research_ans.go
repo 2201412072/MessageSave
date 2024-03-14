@@ -39,7 +39,7 @@ func DeleteResearchAns(src_user string, dst_user string, application string) int
 
 func ChangeResearchAns(src_user string, dst_user string, application string, stage string, password string) int {
 	//该函数用于修改状态，它表示一个src_user,dst_user_application的键值的状态被修改为stage，密码被修改为password
-	result := database.Model(&ResearchAns{}).Where("user_src = ? AND user_dst=? AND application", "John").Updates(map[string]interface{}{"Stage": stage, "Password": password})
+	result := database.Model(&ResearchAns{}).Where("user_src = ? AND user_dst=? AND application=?", src_user, dst_user, application).Updates(map[string]interface{}{"Stage": stage, "Password": password})
 	if result.Error != nil {
 		return 0
 	}

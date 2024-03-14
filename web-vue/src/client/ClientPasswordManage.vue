@@ -42,8 +42,8 @@
                             </el-table-column>
                         </el-table>
                     </div>
-                <AddPasswordUI :page="ClientHomePage/PasswordManage" :myfunction="PasswordSearch"></AddPasswordUI>
-                <SearchPasswordUI :page="ClientHomePage/PasswordManage" :myfunction="ResultSearch"></SearchPasswordUI>
+                <AddPasswordUI page="ClientHomePage/PasswordManage" myfunction="PasswordSearch"></AddPasswordUI>
+                <SearchPasswordUI page="ClientHomePage/PasswordManage" myfunction="ResultSearch"></SearchPasswordUI>
                 <!-- <div></div> 下面代码，未完待续-->
                 <h3> Password Search Result table </h3>
                     <div class="result-search">
