@@ -64,10 +64,17 @@ export default{
     },
     methods:{
         SearchAll(){
-            axios.get("http://localhost:8090/ClientHomePage/Config/PublicKey-SearchAll")
+            axios.post("http://localhost:8090/ClientHomePage/Config/PublicKey-Search",{
+                "Username":"",
+            })
             .then(response=>{
-                this.tableData=response.data;
-                console.log('get publickey data.',this.tableData);
+                if(response.data.length==0) {
+                    alert('None data in localhost.');
+                }
+                else{
+                    this.tableData=response.data;
+                    console.log('get publickey data.',this.tableData);    
+                }
             },)
             .catch(error=>{
                 console.log("error",error);
@@ -77,12 +84,18 @@ export default{
 
         Search(){
             var myform = this.myform
+            console.log('connect_user',myform.connect_user);
             axios.post("http://localhost:8090/ClientHomePage/Config/PublicKey-Search",{
-                "connect_user": myform.connect_user,
+                "Username": myform.connect_user,
             })
             .then(response => {
+                if(response.data.length==0){
+                    alert('None data in localhost.');
+                }
+                else{
                     console.log('get publickey data.',response.data);
                     this.tableData = response.data;
+                }
                 },
             )
             .catch(response => {
@@ -97,7 +110,7 @@ export default{
         handleDelete(index,temp){
             this.tableData.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/Config/PublicKey-Delete",{
-                "connect_user": temp,
+                "Username": temp,
             })
             .then(response => {
                     console.log('delete.');

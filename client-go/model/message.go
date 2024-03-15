@@ -1,5 +1,7 @@
 package model
 
+import "fmt"
+
 type Message struct {
 	SrcUser string `gorm:"primaryKey;column:user_src;foreignKey:username;references:public_keys:username"`
 	DstUser string `gorm:"primaryKey;column:user_dst;foreignKey:username;references:public_keys:username"`
@@ -15,9 +17,23 @@ func GetMessages() ([]Message, int) {
 	return temp, 1
 }
 
-func GetMessage(src_user string, dst_user string, key_word string) (Message, int) {
+func GetMessage(src_user string, dst_user string, key_word string, operate string) (Message, int) {
 	var temp Message
-	database.Where("user_src=? AND user_dst=? AND KeyWord=?", src_user, dst_user, key_word).First(&temp)
+	database.Where("user_src=? AND user_dst=? AND KeyWord=? AND Operate=?", src_user, dst_user, key_word, operate).First(&temp)
+	return temp, 1
+}
+
+func GetMessageByMap(values map[string]string) ([]Message, int) {
+	var temp []Message
+	sql := ""
+	for key, value := range values {
+		if sql == "" {
+			sql += fmt.Sprintf("%s=%s", key, value)
+		} else {
+			sql += fmt.Sprintf(" AND %s=%s", key, value)
+		}
+	}
+	database.Where(sql).First(&temp)
 	return temp, 1
 }
 
@@ -53,8 +69,8 @@ func AddMessage(msg Message) int {
 	return 1
 }
 
-func DeleteMessage(src_user string, dst_user string, application string) int {
-	result := database.Where("user_src=? AND user_dst=? AND keyword=?", src_user, dst_user, application).Delete(&Message{})
+func DeleteMessage(src_user string, dst_user string, application string, operate string) int {
+	result := database.Where("user_src=? AND user_dst=? AND keyword=? AND Operate=?", src_user, dst_user, application, operate).Delete(&Message{})
 	if result.Error != nil {
 		return 0
 	}

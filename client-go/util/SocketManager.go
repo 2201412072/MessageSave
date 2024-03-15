@@ -27,15 +27,16 @@ func ConnSend(msg string) {
 }
 
 // 接受消息
-func ConnRecive() string {
+func ConnRecive() (string, error) {
 	//buffer := make([]byte, 1024)
 	fmt.Println("conn:", conn)
 	n, err := conn.Read(buffer)
 	if err != nil {
 		fmt.Println("Socket recive error ", err)
+		return "", err
 	}
 	msg := string(buffer[:n])
-	return msg
+	return msg, nil
 }
 
 // 关闭连接

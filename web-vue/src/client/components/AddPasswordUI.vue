@@ -76,13 +76,14 @@ export default{
             })
             .then(response => {
                     console.log('add password ',response.data);
-                    inputValue="为 "+myform.app+"添加密码成功"
+                    let inputValue="为 "+myform.app+"添加密码成功";
                     // MessageBox.alert(inputValue, '提示', {
                     //     confirmButtonText: '确定',
                     //     type: 'info'
                     // });
-                    alert(inputValue)
-                    myfunction()
+                    alert(inputValue);
+                    this.myfunction();
+                    this.Reset();
                 },
             )
             .catch(response => {

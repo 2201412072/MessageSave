@@ -38,13 +38,13 @@ export default{
             })
             .then(response => {
                     console.log('ask password ',response.data);
-                    inputValue="已经向 "+myform.connect_user+" 请求"+myform.app+"密码"
+                    let inputValue="已经向 "+myform.connect_user+" 请求"+myform.app+"密码";
                     // MessageBox.alert(inputValue, '提示', {
                     //     confirmButtonText: '确定',
                     //     type: 'info'
                     // });
-                    alert(inputValue)
-                    myfunction()
+                    alert(inputValue);
+                    this.myfunction();
                 },
             )
             .catch(response => {

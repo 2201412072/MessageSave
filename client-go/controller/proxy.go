@@ -73,6 +73,31 @@ func InitProxy() {
 // 	return messages, 1
 // }
 
+// 获取未处理的消息
+func PullMessage() error {
+	// // 获取本地缓存的未处理的消息
+	// local_messages, _ := model.GetMessages()
+	// 获取服务器消息并缓存
+	var net_messages []model.Message
+	util.ConnSend("GetMessageByUser " + username)
+	msg_json, err := util.ConnRecive()
+	if err != nil { // 连接出错
+		fmt.Println("Socket Connect Error!")
+		return err
+	}
+	err = json.Unmarshal([]byte(msg_json), &net_messages)
+	if err != nil {
+		fmt.Println("Error! ", err)
+	}
+	for _, msg := range net_messages { // 缓存
+		model.AddMessage(msg)
+	}
+	// 合并两堆消息
+	// messages := append(local_messages, net_messages...)
+	// return messages, nil
+	return nil
+}
+
 func RecvMessage() {
 	// 代理启动后接收服务器传来的消息（不知道怎么实现才好，就先还是查询message表吧）
 	// var messages []model.Message
@@ -83,13 +108,17 @@ func RecvMessage() {
 
 	for {
 		var messages []model.Message
-		msg_json := util.ConnRecive()
+		msg_json, err := util.ConnRecive()
+		if err != nil {
+			fmt.Println("Socket Connect Error!")
+			return
+		}
 		fmt.Println("msg:", msg_json)
 		if len(msg_json) == 0 {
 			//目前看的是keep alive报文，不用管
 			continue
 		}
-		err := json.Unmarshal([]byte(msg_json), &messages)
+		err = json.Unmarshal([]byte(msg_json), &messages)
 		if err != nil {
 			//说明是回应消息，目前的处理方式是：将其直接通过通道送入
 			ResponseChan <- msg_json
@@ -162,8 +191,8 @@ func GetPublicKeyByUser(user string) (*rsa.PublicKey, int) {
 		} else {
 			return nil, 0
 		}
-
 	}
+	fmt.Println(public_key)
 	public_key_ans, _ := util.PublicKey_from_bytes(public_key)
 	return public_key_ans, 1
 }

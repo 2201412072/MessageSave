@@ -121,7 +121,10 @@ export default{
     },
     methods:{
         AddSearchAll(){
-            axios.get("http://localhost:8090/ClientHomePage/AnnouncementManage/Add-SearchAll")
+            axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Add-Search",{
+                "SrcUser":"",
+                "Keyword":"",
+            })
             .then(response=>{
                 this.tableData=response.data;
                 console.log('get password data.',this.tableData);
@@ -140,8 +143,8 @@ export default{
                 return 
             }
             axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Add-Search",{
-                "connect_user": myform.connect_user,
-                "app":myform.app,
+                "SrcUser": myform.connect_user,
+                "Keyword":myform.app,
             })
             .then(response => {
                     console.log('get password data.',response.data);
@@ -161,8 +164,8 @@ export default{
         handleAnnounce(index,temp1,temp2){
             this.tableData.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Add-Delete",{
-                "connect_user": temp1,
-                "app":temp2,
+                "SrcUser": temp1,
+                "KeyWord":temp2,
             })
             .then(response => {
                     console.log('delete.');
@@ -175,7 +178,10 @@ export default{
         },
 
         RequestSearchAll(){
-            axios.get("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-SearchAll")
+            axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Search",{
+                "SrcUser":"",
+                "KeyWord":"",
+            })
             .then(response=>{
                 this.tableData_request=response.data;
                 console.log('get result data.',this.tableData_request);
@@ -194,8 +200,8 @@ export default{
                 return 
             }
             axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Search",{
-                "connect_user": myform.connect_user,
-                "app":myform.app,
+                "SrcUser": myform.connect_user,
+                "KeyWord":myform.app,
             })
             .then(response => {
                     console.log('get result data.',response.data);
@@ -215,8 +221,8 @@ export default{
         handleAgree(index,temp1,temp2){
             this.tableData_request.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Agree",{
-                "connect_user": temp1,
-                "app":temp2,
+                "SrcUser": temp1,
+                "KeyWord":temp2,
             })
             .then(response => {
                     console.log('delete.');
@@ -230,8 +236,8 @@ export default{
         handleDisagree(){
             this.tableData_request.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Disagree",{
-                "connect_user": temp1,
-                "app":temp2,
+                "SrcUser": temp1,
+                "KeyWord":temp2,
             })
             .then(response => {
                     console.log('delete.');

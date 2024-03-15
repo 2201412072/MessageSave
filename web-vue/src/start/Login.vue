@@ -52,29 +52,28 @@ export default ({
     },
     login(){
       console.log("login");
-        axios.post("http://localhost:8090/Login",{
-            "username":this.username,
-            'password':this.password,
-        })
-        .then(response => {
-                console.log('login over.',response);
-                this.password = "";
-                if(response.data.result==1){
-                    //登录成功
-                    console.log('login succeed.',response);
-                    this.whatpage=response.data.whatpage
-                    this.jumppage()
-                }
-                else{
-                    alert("用户或密码错误")
-                }
-            },
-        )
-        .catch(response => {
-            console.log("error",response);
-            alert("login failed.");
-        }) 
-      
+      axios.post("http://localhost:8090/Login",{
+          "username":this.username,
+          'password':this.password,
+      })
+      .then(response => {
+              console.log('login over.',response);
+              this.password = "";
+              if(response.data.result==1){
+                  //登录成功
+                  console.log('login succeed.',response);
+                  this.whatpage=response.data.whatpage
+                  this.jumppage()
+              }
+              else{
+                  alert("用户或密码错误")
+              }
+          },
+      )
+      .catch(response => {
+          console.log("error",response);
+          alert("login failed.");
+      }) 
     }
   }
 });

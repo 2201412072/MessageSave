@@ -47,7 +47,7 @@ func DeleteMessage(ctx *gin.Context) {
 	dst_user := requestMap.DstUser
 	key_word := requestMap.KeyWord
 	// 删除消息
-	model.DeleteMessage(src_user, dst_user, key_word)
+	model.DeleteMessage(src_user, dst_user, key_word, "")
 	// 回复前端
 	ctx.JSON(200, gin.H{"msg": "delete over."})
 }
@@ -70,7 +70,7 @@ func AgreeMessage(ctx *gin.Context) {
 
 	//接下来的操作应该是：查询对应消息，然后从params里读出相应的二次加密密文，返回进行解密，将解密后的信息返回
 	// 查询对应消息
-	msg, _ := model.GetMessage(src_user, dst_user, key_word)
+	msg, _ := model.GetMessage(src_user, dst_user, key_word, "EncryptAnnocement2Server")
 	passwd1 := msg.Params
 	//解密
 	stringdata, flag := Deal_B2A_message_to_base(passwd1)
@@ -82,7 +82,7 @@ func AgreeMessage(ctx *gin.Context) {
 	new_msg := model.Message{SrcUser: username, DstUser: src_user, KeyWord: key_word, Operate: "DecryptMessage2Server", Params: stringdata}
 	PostMessage(new_msg)
 	// 删除消息
-	model.DeleteMessage(src_user, dst_user, key_word)
+	model.DeleteMessage(src_user, dst_user, key_word, "DecryptMessage2Server")
 }
 
 // 不同意消息
@@ -105,5 +105,40 @@ func DisagreeMessage(ctx *gin.Context) {
 	new_msg := model.Message{SrcUser: username, DstUser: src_user, KeyWord: key_word, Operate: "DecryptRequestDisAgree2Server", Params: ""}
 	PostMessage(new_msg)
 	//删除消息
-	model.DeleteMessage(src_user, dst_user, key_word)
+	model.DeleteMessage(src_user, dst_user, key_word, "DecryptRequestDisAgree2Server")
+}
+
+func GetAddMessage(ctx *gin.Context) {
+	// 解析表单输入
+	var requestMap model.Message
+	src_user := requestMap.SrcUser
+	key_word := requestMap.KeyWord
+	// 查询对应添加请求
+	var messages []model.Message
+	if src_user == "" && key_word == "" {
+		messages, _ = model.GetMessageByOperate("EncryptAnnocement2Server")
+	} else if src_user == "" {
+		messages, _ = model.GetMessageByMap(map[string]string{"Operate": "EncryptAnnocement2Server", "KeyWord": key_word})
+	} else if key_word == "" {
+		messages, _ = model.GetMessageByMap(map[string]string{"Operate": "EncryptAnnocement2Server", "SrcUser": src_user})
+	} else {
+		messages, _ = model.GetMessageByMap(map[string]string{"Operate": "EncryptAnnocement2Server", "SrcUser": src_user, "KeyWord": key_word})
+	}
+	// 回复前端
+	ctx.JSON(200, messages)
+}
+
+func DeleteAddMessage(ctx *gin.Context) {
+	// 解析表单输入
+	var requestMap model.Message
+	src_user := requestMap.SrcUser
+	key_word := requestMap.KeyWord
+	// 删除对应添加请求
+	flag := model.DeleteMessage(src_user, username, key_word, "EncryptAnnocement2Server")
+	// 回复前端
+	if flag == 1 {
+		ctx.JSON(200, gin.H{"msg": "delete over."})
+	} else {
+		ctx.JSON(401, gin.H{"msg": "delete failed."})
+	}
 }

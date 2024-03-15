@@ -3,6 +3,7 @@ package controller
 import (
 	"bufio"
 	"encoding/json"
+	"errors"
 	"fmt"
 	"net"
 	"server-go/model"
@@ -87,11 +88,16 @@ func PostMessage(message model.Message) int {
 }
 
 // 发送消息
-func ConnSend(user string, msg string) {
+func ConnSend(user string, msg string) error {
 	fmt.Println("向", user, "发送消息:", msg)
-	writer := writers[user]
-	writer.Write([]byte(msg))
-	writer.Flush()
+	writer, exist := writers[user]
+	if exist {
+		writer.Write([]byte(msg))
+		writer.Flush()
+		return nil
+	} else {
+		return errors.New("login user isn't exist")
+	}
 }
 
 // 删除该连接

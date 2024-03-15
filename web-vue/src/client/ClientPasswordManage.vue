@@ -27,7 +27,7 @@
                     <div class="password-table">
                         <el-table :data="tableData" style="width:100%">
                             <el-table-column label='Index' width="180">
-                                <template v-slot="scope"> {{scope.$index}}</template>
+                                <template v-slot="scope"> {{scope.$index+1}}</template>
                             </el-table-column>
                             <el-table-column label='Connect User' width="180">
                                 <template v-slot="scope"> {{scope.row.connect_user}}</template>
@@ -42,8 +42,8 @@
                             </el-table-column>
                         </el-table>
                     </div>
-                <AddPasswordUI page="ClientHomePage/PasswordManage" myfunction="PasswordSearch"></AddPasswordUI>
-                <SearchPasswordUI page="ClientHomePage/PasswordManage" myfunction="ResultSearch"></SearchPasswordUI>
+                <AddPasswordUI page="ClientHomePage/PasswordManage" :myfunction="PasswordSearch"></AddPasswordUI>
+                <SearchPasswordUI page="ClientHomePage/PasswordManage" :myfunction="ResultSearch"></SearchPasswordUI>
                 <!-- <div></div> 下面代码，未完待续-->
                 <h3> Password Search Result table </h3>
                     <div class="result-search">
@@ -76,7 +76,7 @@
                     <div class="password-table">
                         <el-table :data="tableData" style="width:100%">
                             <el-table-column label='Index' width="180">
-                                <template v-slot="scope"> {{scope.$index}}</template>
+                                <template v-slot="scope"> {{scope.$index+1}}</template>
                             </el-table-column>
                             <el-table-column label='Connect User' width="180">
                                 <template v-slot="scope"> {{scope.row.connect_user}}</template>
@@ -138,7 +138,10 @@ export default{
     },
     methods:{
         PasswordSearchAll(){
-            axios.get("http://localhost:8090/ClientHomePage/PasswordManage/Password-SearchAll")
+            axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Search",{
+                "Application":"",
+                "Username":"",
+            })
             .then(response=>{
                 this.tableData=response.data;
                 console.log('get password data.',this.tableData);
@@ -157,8 +160,8 @@ export default{
                 return 
             }
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Search",{
-                "connect_user": myform.connect_user,
-                "app":myform.app,
+                "Username": myform.connect_user,
+                "Application":myform.app,
             })
             .then(response => {
                     console.log('get password data.',response.data);
@@ -178,8 +181,8 @@ export default{
         handleDelete_password(index,temp1,temp2){
             this.tableData.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Delete",{
-                "connect_user": temp1,
-                "app":temp2,
+                "Username": temp1,
+                "Application":temp2,
             })
             .then(response => {
                     console.log('delete.');
@@ -192,7 +195,11 @@ export default{
         },
 
         ResultSearchAll(){
-            axios.get("http://localhost:8090/ClientHomePage/PasswordManage/Result-SearchAll")
+            axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Search",{
+                "Username": "",
+                "Application":"",
+                "stage":"",
+            })
             .then(response=>{
                 this.tableData_result=response.data;
                 console.log('get result data.',this.tableData_result);
@@ -211,8 +218,8 @@ export default{
                 return 
             }
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Search",{
-                "connect_user": myform.connect_user,
-                "app":myform.app,
+                "Username": myform.connect_user,
+                "Application":myform.app,
                 "stage":myform.selectedOption,
             })
             .then(response => {
@@ -227,15 +234,15 @@ export default{
         },
 
         ResultReset(){
-            this.myform_result.connect_user = '';
+            this.myform_result.Username = '';
             this.myform_result.app = '';
             this.myform_result.selectedOption = 1;
         },
         handleDelete_result(index,temp1,temp2,temp_stage){
             this.tableData_result.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Delete",{
-                "connect_user": temp1,
-                "app":temp2,
+                "Username": temp1,
+                "Application":temp2,
                 "stage":temp_stage,
             })
             .then(response => {
