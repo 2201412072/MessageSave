@@ -5,9 +5,9 @@ import (
 )
 
 type Password struct {
-	Application string `gorm:"primaryKey;column:application"`
-	Username    string `gorm:"primaryKey;column:username;foreignKey:username;references:public_keys:username"`
-	Saved_key   []byte `gorm:"type:longblob"`
+	Application string `json:"app";gorm:"primaryKey;column:application"`
+	Username    string `json:"connect_user";gorm:"primaryKey;column:username;foreignKey:username;references:public_keys:username"`
+	Saved_key   []byte `json:"password";gorm:"type:longblob"`
 	Single_key  string `gorm:"size:10"`
 }
 

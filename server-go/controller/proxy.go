@@ -83,6 +83,7 @@ func PostMessage(message model.Message) int {
 		message.SrcUser = "server"
 	}
 	meesageData, _ := json.Marshal(message)
+	fmt.Println("send message to ", message.DstUser)
 	ConnSend(message.DstUser, string(meesageData))
 	return 1
 }
@@ -92,7 +93,7 @@ func ConnSend(user string, msg string) error {
 	fmt.Println("向", user, "发送消息:", msg)
 	writer, exist := writers[user]
 	if exist {
-		writer.Write([]byte(msg))
+		writer.Write([]byte(msg + "\n"))
 		writer.Flush()
 		return nil
 	} else {

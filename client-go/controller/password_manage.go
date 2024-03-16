@@ -30,7 +30,7 @@ func SearchPasssword(ctx *gin.Context) {
 	var result []map[string]interface{}
 	for _, item := range passwd2_data {
 		tempMap := map[string]interface{}{
-			"key_word":     item.Application,
+			"app":          item.Application,
 			"connect_user": item.Username,
 			// "password2":    item.Saved_key,
 		}

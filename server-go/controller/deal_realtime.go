@@ -101,13 +101,17 @@ func deal_message_DecryptRequest(msg model.Message) int {
 	//该函数处理DecryptRequest2Server，具体操作为加入暂存消息表中,如果目标用户连着服务器，则顺便转发给它
 	err := model.AddMessage(msg)
 	if err != 1 {
-
 		//加入出错
 		ConnSend(msg.SrcUser, "AddMessageError1")
 		return 0
 	}
-	ConnSend(msg.SrcUser, "AddMessagePass")
+	// 向源用户发送“添加成功”
+	src_user := msg.SrcUser
+	ConnSend(src_user, "AddMessagePass")
+	// 向目的用户发送添加密码请求
 	msg.Operate = "DecryptRequest2Client"
+	msg.SrcUser = msg.DstUser
+	msg.DstUser = src_user
 	if send_realtime_messge(msg) == 1 {
 		//在线，发送过去了
 		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord)
@@ -163,8 +167,8 @@ func deal_message_PublicKeyRecord(msg model.Message) int {
 	return 1
 }
 
+// 该函数用于判断服务器是否连接着目标用户，如果连接就将该消息发送过去。假如没有发送成功呢？
 func send_realtime_messge(msg model.Message) int {
-	//该函数用于判断服务器是否连接着目标用户，如果连接就将该消息发送过去
 	temp, _ := model.GetUserPassword(msg.DstUser)
 	if temp.Stage == 0 {
 		//离线

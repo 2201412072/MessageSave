@@ -38,6 +38,7 @@ func InitProxy() {
 	// 创建SSE连接，从服务器获取消息并传给前端
 	es = util.NewEventSource("proxy_message", "/ProxyMessage/events", RecvMessage)
 
+	// 发送自己的公钥，感觉没必要，注册的时候发送就行。
 	go func() {
 		//之所以新开一个线程，是因为recvmessage在initproxy线程，如果不新开，那么没办法从recvmessage那里收到消息
 		//发送自身公钥
@@ -55,6 +56,8 @@ func InitProxy() {
 			fmt.Println("服务器已存在该公钥，此次发送无效")
 		case "PublicKeyRecordPass":
 			fmt.Println("服务器接收成功")
+		default:
+			fmt.Println("接收到未知信息，", response)
 		}
 	}()
 
@@ -106,6 +109,7 @@ func RecvMessage() {
 	// 	fmt.Println("Error! ", err)
 	// }
 
+	// 用户A向用户A发送解密请求，服务器会向用户A发送请求发送成功，再向用户A发送请求解密，但是目前用户A似乎只能接收到前面的消息，后面的接收不到了。
 	for {
 		var messages []model.Message
 		msg_json, err := util.ConnRecive()
@@ -158,8 +162,8 @@ func PostMessage(message model.Message) int {
 		message.SrcUser = username
 	}
 	meesageData, _ := json.Marshal(message)
-	//该\n是由于服务器接收数据包时，按照\n结尾
-	message_json := string(meesageData) + "\n"
+	//该\n是由于服务器接收数据包时，按照\n结尾（目前放在connsend部分）
+	message_json := string(meesageData)
 	util.ConnSend(message_json)
 	return 1
 }

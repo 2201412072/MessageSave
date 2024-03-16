@@ -54,6 +54,7 @@ func Login(ctx *gin.Context) {
 	sendMessage.DstUser = "server"
 	sendMessage.KeyWord = requestMap.Password
 	sendMessage.Operate = "Login2Server"
+	// login 使用socket通信，限制了一台机器只能有一个用户
 	PostMessage(sendMessage)
 	response := <-ResponseChan
 	fmt.Println("response:", response)

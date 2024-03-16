@@ -179,10 +179,11 @@ export default{
             this.myform_password.app = '';
         },
         handleDelete_password(index,temp1,temp2){
+            console.log('delete user:',temp1,' app:',temp2)
             this.tableData.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Delete",{
-                "Username": temp1,
-                "Application":temp2,
+                "connect_user": temp1,
+                "app":temp2,
             })
             .then(response => {
                     console.log('delete.');
