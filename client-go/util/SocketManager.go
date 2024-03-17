@@ -4,6 +4,7 @@ import (
 	"bufio"
 	"fmt"
 	"net"
+	"strings"
 )
 
 var conn *net.TCPConn
@@ -28,7 +29,7 @@ func NewConn(server_addr string, port string) {
 func ConnSend(msg string) {
 	fmt.Println("向服务器发送消息:", msg)
 	// conn.Write([]byte(msg))
-	writer.Write([]byte(msg + "/n"))
+	writer.Write([]byte(msg + "\n"))
 	writer.Flush()
 }
 
@@ -44,6 +45,7 @@ func ConnRecive() (string, error) {
 		msg := string(buffer[:n])
 	*/
 	msg, _ := reader.ReadString('\n')
+	msg = strings.TrimRight(msg, "\n")
 	fmt.Println("Conn recevice ", msg)
 	return msg, nil
 }

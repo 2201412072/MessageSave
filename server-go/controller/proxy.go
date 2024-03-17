@@ -7,6 +7,7 @@ import (
 	"fmt"
 	"net"
 	"server-go/model"
+	"strings"
 )
 
 var readers = make(map[string]*bufio.Reader)
@@ -46,7 +47,7 @@ func ConnAccept(listener net.Listener) {
 	}
 
 	var userinfo = make(map[string]string)
-	json.Unmarshal(buffer[:n], &userinfo)
+	json.Unmarshal(buffer[:n-1], &userinfo)
 	fmt.Println(userinfo)
 	user := userinfo["user"]
 	//标志着该用户在线
@@ -68,10 +69,13 @@ func ConnAccept(listener net.Listener) {
 				fmt.Println("用户 ", user, " 中断了通话")
 				break
 			}
+			//message = message[:len(message)-1]
+			message = strings.TrimRight(message, "\n")
 			fmt.Printf("Get %v len %v message: %v \n", user, len(message), message)
 			// 处理接收到的消息
-			var msg model.Message
-			json.Unmarshal([]byte(message), &msg)
+			var msgs []model.Message
+			json.Unmarshal([]byte(message), &msgs)
+			msg := msgs[0]
 			deal_messages(msg)
 		}
 	}()
@@ -82,7 +86,9 @@ func PostMessage(message model.Message) int {
 	if message.SrcUser == "" {
 		message.SrcUser = "server"
 	}
-	meesageData, _ := json.Marshal(message)
+	var temp = make([]model.Message, 1)
+	temp[0] = message
+	meesageData, _ := json.Marshal(temp)
 	fmt.Println("send message to ", message.DstUser)
 	ConnSend(message.DstUser, string(meesageData))
 	return 1

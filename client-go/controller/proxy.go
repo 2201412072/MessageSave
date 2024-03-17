@@ -161,7 +161,9 @@ func PostMessage(message model.Message) int {
 	if message.SrcUser == "" {
 		message.SrcUser = username
 	}
-	meesageData, _ := json.Marshal(message)
+	var temp = make([]model.Message, 1)
+	temp[0] = message
+	meesageData, _ := json.Marshal(temp)
 	//该\n是由于服务器接收数据包时，按照\n结尾（目前放在connsend部分）
 	message_json := string(meesageData)
 	util.ConnSend(message_json)
