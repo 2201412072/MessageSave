@@ -30,13 +30,14 @@ func SetupRouter() *gin.Engine {
 	// // 密码管理（跟密码管理查询放一块吧）
 	// r.POST("/PasswordManage",)
 	// 密码管理查询
-	r.POST("/ClientHomePage/PasswordManage/SearchPassword", controller.SearchPasssword)
+	// r.POST("/ClientHomePage/PasswordManage/SearchPassword", controller.SearchPassword)
+	r.POST("/ClientHomePage/PasswordManage/SearchPassword", controller.UsePassword)
 	// 密码管理添加密码
 	r.POST("/ClientHomePage/PasswordManage/AddPassword", controller.SavePassword)
 	// 密码管理查询密码
-	r.POST("/ClientHomePage/PasswordManage/Password-Search", controller.SearchPasssword)
+	r.POST("/ClientHomePage/PasswordManage/Password-Search", controller.SearchPassword)
 	// 密码管理删除
-	r.POST("/ClientHomePage/PasswordManage/Password-Delete", controller.DeletePasssword)
+	r.POST("/ClientHomePage/PasswordManage/Password-Delete", controller.DeletePassword)
 	// 密码管理结果查询
 	r.POST("/ClientHomePage/PasswordManage/Result-Search", controller.GetResearchAns)
 	// 密码管理结果删除

@@ -7,7 +7,7 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
-func SearchPasssword(ctx *gin.Context) {
+func SearchPassword(ctx *gin.Context) {
 	// 搜索管理的密码
 	// 解析表单数据
 	var requestMap model.Password
@@ -40,7 +40,7 @@ func SearchPasssword(ctx *gin.Context) {
 }
 
 // 删除指定密码
-func DeletePasssword(ctx *gin.Context) {
+func DeletePassword(ctx *gin.Context) {
 	// 解析表单输入
 	var requestMap modelview.Password
 	ctx.ShouldBind(&requestMap)

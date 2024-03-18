@@ -2,6 +2,7 @@ package controller
 
 import (
 	"client-go/model"
+	"client-go/model/modelview"
 
 	"github.com/gin-gonic/gin"
 )
@@ -35,7 +36,11 @@ import (
 // 该函数只要被调用，就已经假设本地消息是完整的了
 func GetMessage(ctx *gin.Context) {
 	local_messages, _ := model.GetMessages()
-	ctx.JSON(200, local_messages)
+	result_messages := make([]modelview.Message, len(local_messages))
+	for i, v := range local_messages {
+		result_messages[i] = modelview.Message{Connect_user: v.SrcUser, App: v.KeyWord}
+	}
+	ctx.JSON(200, result_messages)
 }
 
 // 删除消息
@@ -55,9 +60,8 @@ func DeleteMessage(ctx *gin.Context) {
 // 同意消息
 func AgreeMessage(ctx *gin.Context) {
 	// 解析表单输入
-	var requestMap model.Message
+	var requestMap modelview.Message2
 	src_user := requestMap.SrcUser
-	dst_user := requestMap.DstUser
 	key_word := requestMap.KeyWord
 	// 查询对应消息
 	// msg, _ := model.GetMessage(src_user, dst_user, key_word)
@@ -70,7 +74,7 @@ func AgreeMessage(ctx *gin.Context) {
 
 	//接下来的操作应该是：查询对应消息，然后从params里读出相应的二次加密密文，返回进行解密，将解密后的信息返回
 	// 查询对应消息
-	msg, _ := model.GetMessage(src_user, dst_user, key_word, "EncryptAnnocement2Server")
+	msg, _ := model.GetMessage(src_user, username, key_word, "EncryptAnnocement2Server")
 	passwd1 := msg.Params
 	//解密
 	stringdata, flag := Deal_B2A_message_to_base(passwd1)
@@ -82,15 +86,15 @@ func AgreeMessage(ctx *gin.Context) {
 	new_msg := model.Message{SrcUser: username, DstUser: src_user, KeyWord: key_word, Operate: "DecryptMessage2Server", Params: stringdata}
 	PostMessage(new_msg)
 	// 删除消息
-	model.DeleteMessage(src_user, dst_user, key_word, "DecryptMessage2Server")
+	model.DeleteMessage(src_user, username, key_word, "DecryptMessage2Server")
 }
 
 // 不同意消息
 func DisagreeMessage(ctx *gin.Context) {
 	// 解析表单输入
-	var requestMap model.Message
+	var requestMap modelview.Message2
 	src_user := requestMap.SrcUser
-	dst_user := requestMap.DstUser
+	dst_user := username
 	key_word := requestMap.KeyWord
 	// // 查询对应消息
 	// msg, _ := model.GetMessage(src_user, dst_user, key_word)
@@ -110,7 +114,7 @@ func DisagreeMessage(ctx *gin.Context) {
 
 func GetAddMessage(ctx *gin.Context) {
 	// 解析表单输入
-	var requestMap model.Message
+	var requestMap modelview.Message2
 	src_user := requestMap.SrcUser
 	key_word := requestMap.KeyWord
 	// 查询对应添加请求
@@ -130,7 +134,7 @@ func GetAddMessage(ctx *gin.Context) {
 
 func DeleteAddMessage(ctx *gin.Context) {
 	// 解析表单输入
-	var requestMap model.Message
+	var requestMap modelview.Message2
 	src_user := requestMap.SrcUser
 	key_word := requestMap.KeyWord
 	// 删除对应添加请求

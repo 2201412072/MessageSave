@@ -20,6 +20,36 @@ func GetResearchAns(src_user string, dst_user string, application string, stage 
 	}
 }
 
+func GetAllResearchAns() ([]ResearchAns, int) {
+	var temps []ResearchAns
+	result := database.Find(&temps)
+	if result.Error != nil {
+		return make([]ResearchAns, 0), 0
+	} else {
+		return temps, 1
+	}
+}
+
+func GetResearchAnsByDst(dst_user string) ([]ResearchAns, int) {
+	var temps []ResearchAns
+	result := database.Where("user_dst=?", dst_user).Find(&temps)
+	if result.Error != nil {
+		return make([]ResearchAns, 0), 0
+	} else {
+		return temps, 1
+	}
+}
+
+func GetResearchAnsByApp(application string) ([]ResearchAns, int) {
+	var temps []ResearchAns
+	result := database.Where("application=?", application).Find(&temps)
+	if result.Error != nil {
+		return make([]ResearchAns, 0), 0
+	} else {
+		return temps, 1
+	}
+}
+
 func AddResearchAns(src_user string, dst_user string, application string, stage string, password string) int {
 	temp := ResearchAns{SrcUser: src_user, DstUser: dst_user, Application: application, Stage: stage, Password: password}
 	result := database.Create(&temp)

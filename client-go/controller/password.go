@@ -63,6 +63,8 @@ func UsePassword(ctx *gin.Context) {
 	passwd2, _ := model.GetPasswordString(user, application)
 	// 消息代理向服务器发送关联用户解密请求
 	RequireDecrypt(user, application, passwd2)
+	//将该消息存入research_ans表中，方便查找
+	model.AddResearchAns(username, user, application, "hasn't completed", "")
 	// 回复前端
 	ctx.JSON(200, gin.H{"msg": "已向对方发送解密请求。"})
 }

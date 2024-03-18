@@ -74,7 +74,7 @@
                     </div>
                     <!-- 数据表 -->
                     <div class="password-table">
-                        <el-table :data="tableData" style="width:100%">
+                        <el-table :data="tableData_result" style="width:100%">
                             <el-table-column label='Index' width="180">
                                 <template v-slot="scope"> {{scope.$index+1}}</template>
                             </el-table-column>

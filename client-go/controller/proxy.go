@@ -8,7 +8,6 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/rpc"
-	"time"
 
 	"gopkg.in/antage/eventsource.v1"
 )
@@ -141,8 +140,8 @@ func RecvMessage() {
 		}
 		// 后端通知前端msgQueue更新
 		// 只设置发送数据，不添加事件名
-		es.SendEventMessage(fmt.Sprintf("send data: %s", time.Now().Format("2006-01-02 15:04:05")), "time", "")
-		es.SendEventMessage(string(msgQueue.Len()), "msgQueue len", "")
+		// es.SendEventMessage(fmt.Sprintf("send data: %s", time.Now().Format("2006-01-02 15:04:05")), "time", "")
+		// es.SendEventMessage(string(msgQueue.Len()), "msgQueue len", "")
 	}
 	// 后端主动向前端推送消息，使用SSE（不用WebSocket了）
 	// for msg := range messages {

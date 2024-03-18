@@ -29,14 +29,20 @@ func GetPublicKeyByUser(user string) ([]byte, int) {
 	return temp, err
 }
 
-func GetPublicKey() ([][]byte, int) {
+// func GetPublicKey() ([][]byte, int) {
+// 	var temps []Public_keys
+// 	database.Find(&temps)
+// 	temp := make([][]byte, len(temps))
+// 	for i := 0; i < len(temps); i++ {
+// 		temp[i] = temps[i].Public_key
+// 	}
+// 	return temp, 1
+// }
+
+func GetPublicKey() ([]Public_keys, int) {
 	var temps []Public_keys
 	database.Find(&temps)
-	temp := make([][]byte, len(temps))
-	for i := 0; i < len(temps); i++ {
-		temp[i] = temps[i].Public_key
-	}
-	return temp, 1
+	return temps, 1
 }
 
 func DeletePublicKey(user string) int {
