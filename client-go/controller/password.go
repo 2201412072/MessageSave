@@ -32,7 +32,12 @@ func SavePassword(ctx *gin.Context) {
 
 			single_key := ""
 			// 存储至数据库
-			model.AddPassword(application, user, passwd2, single_key)
+			flag := model.AddPassword(application, user, passwd2, single_key)
+			if flag == 0 {
+				//添加密码出现了故障，应该是已经有该条数据了，所以需要先删除
+				ctx.JSON(401, gin.H{"msg": "已经通过" + user + "保存了" + application + "的密码，请先删除"})
+				return
+			}
 			//将该加密信息发送给服务器，然后服务器代为转发给对应的客户端
 			var message model.Message
 			message.DstUser = user
@@ -63,10 +68,19 @@ func UsePassword(ctx *gin.Context) {
 	passwd2, _ := model.GetPasswordString(user, application)
 	// 消息代理向服务器发送关联用户解密请求
 	RequireDecrypt(user, application, passwd2)
-	//将该消息存入research_ans表中，方便查找
-	model.AddResearchAns(username, user, application, "hasn't completed", "")
-	// 回复前端
-	ctx.JSON(200, gin.H{"msg": "已向对方发送解密请求。"})
+	//接收服务器返回的信息
+	response := <-ResponseChan
+	if response == "AddMessageError1" {
+		ctx.JSON(401, gin.H{"msg": "服务器未转发，请重新发送"})
+		return
+	} else if response == "AddMessagePass" {
+		//将该消息存入research_ans表中，方便查找
+		model.AddResearchAns(username, user, application, "hasn't completed", "")
+
+		// 回复前端
+		ctx.JSON(200, gin.H{"msg": "已向对方发送解密请求。"})
+	}
+
 }
 
 // 解密一次加密的密文，返回真实密码

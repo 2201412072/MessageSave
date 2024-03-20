@@ -31,7 +31,7 @@ func GetResearchAns(ctx *gin.Context) {
 		result[i].DstUser = v.DstUser
 		result[i].Application = v.Application
 		result[i].Stage = v.Stage
-		result[i].Password = v.Password
+		result[i].Password, _ = Deal_B2A_message_to_utf(v.Password)
 	}
 	//ans, _ := model.GetResearchAns(username, dst_user, application, stage)
 	// 回复前端

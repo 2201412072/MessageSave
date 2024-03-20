@@ -63,7 +63,7 @@
                     </div>
                     <!-- 数据表 -->
                     <div class="request-table">
-                        <el-table :data="tableData" style="width:100%">
+                        <el-table :data="tableData_request" style="width:100%">
                             <el-table-column label='Index' width="180">
                                 <template v-slot="scope"> {{scope.$index}}</template>
                             </el-table-column>
@@ -233,7 +233,7 @@ export default{
                 alert("请求失败");
             })
         },
-        handleDisagree(){
+        handleDisagree(index,temp1,temp2){
             this.tableData_request.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Disagree",{
                 "SrcUser": temp1,

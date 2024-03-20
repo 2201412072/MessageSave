@@ -7,7 +7,7 @@ type Message struct {
 	DstUser string `gorm:"primaryKey;column:user_dst;foreignKey:username;references:public_keys:username"`
 	KeyWord string `gorm:"primaryKey;column:keyword;foreignKey:keyword;references:password:application"`
 	// Time         time.Time `gorm:"column:mytime"` //primaryKey;
-	Operate string
+	Operate string `gorm:"primaryKey"`
 	Params  string
 }
 
