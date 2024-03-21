@@ -18,9 +18,13 @@
         <!-- 消息卡片 -->
         <template v-for="(row,i) in this.tableData">
             <MessageCard  :key="i" v-if="row.operate=='EncryptAnnocement2Client'" CardType="AskEncrypt" :text="row"
-                :Content="'User '+row.connect_user+' send you an encrypt invitation for application '+row.app"/>  
+                :Content="'User '+row.connect_user+' send you an encrypt invitation for application '+row.app"
+                :User="row.connect_user" :App="row.app"
+                :HandleAgree="handleAgreeAnnoncement"/>   
             <MessageCard  :key="i" v-if="row.operate=='DecryptRequest2Client'" CardType="AskDecrypt" :text="row"
-                :Content="'User '+row.connect_user+' send you a decrypt request for application '+row.app"/> 
+                :Content="'User '+row.connect_user+' send you a decrypt request for application '+row.app"
+                :User="row.connect_user" :App="row.app"
+                :HandleAgree="handleAgreeRequest" :HandleDisAgree="handleDisagreeRequest"/> 
         </template>
         <!-- 查询 -->
         <!-- <h2> Annonuncement Manage </h2>
@@ -145,9 +149,9 @@ export default{
     methods:{
         MessageSearchAll(){
             axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Message-Search",{
-                "SrcUser":"",
-                "Keyword":"",
-                "Operate":"",
+                "connect_user":"",
+                "app":"",
+                "operate":"",
             })
             .then(response=>{
                 this.tableData=response.data;
@@ -156,6 +160,51 @@ export default{
             })
             .catch(error=>{
                 console.log("error",error);
+                alert("请求失败");
+            })
+        },
+        handleAgreeAnnoncement(index,temp1,temp2){
+            this.tableData.splice(index, 1);
+            axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Add-Delete",{
+                "SrcUser": temp1,
+                "KeyWord":temp2,
+            })
+            .then(response => {
+                    console.log('delete.');
+                },
+            )
+            .catch(response => {
+                console.log("error",response);
+                alert("请求失败");
+            })
+        },
+        handleAgreeRequest(index,temp1,temp2){
+            this.tableData_request.splice(index, 1);
+            axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Agree",{
+                "SrcUser": temp1,
+                "KeyWord":temp2,
+            })
+            .then(response => {
+                    console.log('delete.');
+                },
+            )
+            .catch(response => {
+                console.log("error",response);
+                alert("请求失败");
+            })
+        },
+        handleDisagreeRequest(index,temp1,temp2){
+            this.tableData_request.splice(index, 1);
+            axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Disagree",{
+                "SrcUser": temp1,
+                "KeyWord":temp2,
+            })
+            .then(response => {
+                    console.log('delete.');
+                },
+            )
+            .catch(response => {
+                console.log("error",response);
                 alert("请求失败");
             })
         },
@@ -257,36 +306,7 @@ export default{
     //         this.myform_request.connect_user = '';
     //         this.myform_request.app = '';
     //     },
-    //     handleAgree(index,temp1,temp2){
-    //         this.tableData_request.splice(index, 1);
-    //         axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Agree",{
-    //             "SrcUser": temp1,
-    //             "KeyWord":temp2,
-    //         })
-    //         .then(response => {
-    //                 console.log('delete.');
-    //             },
-    //         )
-    //         .catch(response => {
-    //             console.log("error",response);
-    //             alert("请求失败");
-    //         })
-    //     },
-    //     handleDisagree(index,temp1,temp2){
-    //         this.tableData_request.splice(index, 1);
-    //         axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Disagree",{
-    //             "SrcUser": temp1,
-    //             "KeyWord":temp2,
-    //         })
-    //         .then(response => {
-    //                 console.log('delete.');
-    //             },
-    //         )
-    //         .catch(response => {
-    //             console.log("error",response);
-    //             alert("请求失败");
-    //         })
-    //     },
+
     }
 }
 </script>

@@ -4,15 +4,15 @@
             <span>{{this.Content}}</span>
             <!-- <div class="flex-grow" /> -->
             <div class="card-button-div">
-                <el-button type="primary">Ok</el-button>
+                <el-button type="primary" @click="HandleAgree(key,User,App)">Ok</el-button>
             </div>
         </div>
         <div v-if="this.CardType=='AskDecrypt'" class="radius-card-ask-decrypt">
             <span>{{this.Content}}</span>
             <!-- <div class="flex-grow" /> -->
             <div class="card-button-div">
-                <el-button type="primary">Yes</el-button>
-                <el-button >No</el-button>
+                <el-button type="primary" @click="HandleAgree(key,User,App)">Yes</el-button>
+                <el-button  @click="HandleDisAgree(key,User,App)">No</el-button>
             </div>
         </div>
     </div>
@@ -29,6 +29,24 @@ export default({
         CardType:{
             type:String,
         },
+        key:{
+            type:Number,
+            default:0,
+        },
+        User:{
+            type:String,
+            default:'',
+        },
+        App:{
+            type:String,
+            default:'',
+        },
+        HandleAgree:{
+            type:Function,
+        },
+        HandleDisAgree:{
+            type:Function,
+        }
     },
     data(){
 
