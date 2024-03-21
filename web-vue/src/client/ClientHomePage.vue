@@ -35,21 +35,25 @@ export default ({
         {
           id:1,
           name:'PasswordManage',
+          icon:'Key',
           url:"/ClientHomePage/PasswordManage",
         },
         {
           id:2,
           name:'MessageManage',
+          icon:'Service',
           url:"/ClientHomePage/AnnouncementManage",
         },
         {
           id:3,
           name:'Config',
+          icon:'Setting',
           url:"/ClientHomePage/Config",
         },
         {
           id:4,
           name:'PublicKeyManage',
+          icon:'Box',
           url:"/ClientHomePage/PublicKeyManage",
         },
       ]
@@ -72,8 +76,8 @@ export default ({
 }
 
 .aside{
-  background: #797979;
-  width:200px;
+  background: #32a4fb;
+  width:300px;
 }
 
 .header{
