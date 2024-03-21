@@ -56,5 +56,7 @@ func SetupRouter() *gin.Engine {
 	// 解密请求拒绝
 	r.POST("/ClientHomePage/AnnouncementManage/Request-Disagree", controller.DisagreeMessage)
 
+	// V2.1 返回接收到的消息
+	r.POST("/ClientHomePage/AnnouncementManage/Message-Search", controller.GetMessage)
 	return r
 }

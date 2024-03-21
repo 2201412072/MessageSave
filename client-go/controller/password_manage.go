@@ -7,6 +7,14 @@ import (
 	"github.com/gin-gonic/gin"
 )
 
+func AggUsers(data []model.Password) map[string][]string {
+	result := make(map[string][]string)
+	for _, item := range data {
+		result[item.Application] = append(result[item.Application], item.Username)
+	}
+	return result
+}
+
 func SearchPassword(ctx *gin.Context) {
 	// 搜索管理的密码
 	// 解析表单数据
@@ -27,12 +35,21 @@ func SearchPassword(ctx *gin.Context) {
 		passwd2_data[0], _ = model.GetPassword(user, application)
 	}
 	// 回复前端
+	// var result []map[string]interface{}
+	// for _, item := range passwd2_data {
+	// 	tempMap := map[string]interface{}{
+	// 		"app":          item.Application,
+	// 		"connect_user": item.Username,
+	// 		// "password2":    item.Saved_key,
+	// 	}
+	// 	result = append(result, tempMap)
+	// }
 	var result []map[string]interface{}
-	for _, item := range passwd2_data {
+	temp_data := AggUsers(passwd2_data)
+	for key, value := range temp_data {
 		tempMap := map[string]interface{}{
-			"app":          item.Application,
-			"connect_user": item.Username,
-			// "password2":    item.Saved_key,
+			"app":          key,
+			"connect_user": value,
 		}
 		result = append(result, tempMap)
 	}

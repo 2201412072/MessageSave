@@ -1,5 +1,12 @@
 /*common.css*/
 
+/* 去掉边距 */
+*{
+    margin:0;
+    padding: 0;
+}
+
+
 .span-tip{
     white-space: nowrap;
 }

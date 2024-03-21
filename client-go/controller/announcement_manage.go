@@ -35,6 +35,7 @@ import (
 // 获取未处理的消息，最近的版本，思路是：只获取本地缓存消息，至于服务器端的消息，单独设置一个函数、消息格式用来爬取，
 // 该函数只要被调用，就已经假设本地消息是完整的了
 func GetMessage(ctx *gin.Context) {
+<<<<<<< Updated upstream
 	var requestMap modelview.Message2
 	ctx.ShouldBind(requestMap)
 	src_user := requestMap.SrcUser //src是对面发消息的客户端，而dst肯定是本机，不用管
@@ -52,9 +53,24 @@ func GetMessage(ctx *gin.Context) {
 	result_messages := make([]modelview.Message, len(messages))
 	for i, v := range messages {
 		result_messages[i] = modelview.Message{Connect_user: v.SrcUser, App: v.KeyWord}
+=======
+	local_messages, _ := model.GetMessages()
+	result_messages := make([]modelview.Message, len(local_messages))
+	for i, v := range local_messages {
+		result_messages[i] = modelview.Message{SrcUser: v.SrcUser, KeyWord: v.KeyWord, Operate: v.Operate}
+>>>>>>> Stashed changes
 	}
 	ctx.JSON(200, result_messages)
 }
+
+// func GetMessage(ctx *gin.Context) {
+// 	local_messages, _ := model.GetMessages()
+// 	result_messages := make([]modelview.Message, len(local_messages))
+// 	for i, v := range local_messages {
+// 		result_messages[i] = modelview.Message{Connect_user: v.SrcUser, App: v.KeyWord}
+// 	}
+// 	ctx.JSON(200, result_messages)
+// }
 
 // 删除消息
 func DeleteMessage(ctx *gin.Context) {

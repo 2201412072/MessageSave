@@ -13,6 +13,7 @@
             "host": "127.0.0.1",
             // "program": "${workspaceFolder}/server-go/main.go",
             "program": "${workspaceFolder}/client-go/main.go",
+            // "program": "${file}",
             "args": [],
             "showLog": false // 这个是调试器的注释输出，很烦，建议为false
         }

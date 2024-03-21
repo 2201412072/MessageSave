@@ -47,48 +47,48 @@ export default createRouter({
             meta:{
                 requiresAuth: false
             },
-            // children:[
-            //     {
-            //         path:'PasswordManage',
-            //         name:'ClientPasswordManage',
-            //         component:ClientPasswordManage,
-            //     },
-            //     {
-            //         path:'AnnouncementManage',
-            //         name:'ClientAnnouncementManage',
-            //         component:ClientAnnouncementManage,
-            //     },
-            //     {
-            //         path:'ClientConfig',
-            //         name:'ClientConfig',
-            //         component:ClientConfig,
-            //     },
-            // ]
+            children:[
+                {
+                    path:'PasswordManage',
+                    name:'ClientPasswordManage',
+                    component:ClientPasswordManage,
+                },
+                {
+                    path:'AnnouncementManage',
+                    name:'ClientAnnouncementManage',
+                    component:ClientAnnouncementManage,
+                },
+                {
+                    path:'ClientConfig',
+                    name:'ClientConfig',
+                    component:ClientConfig,
+                },
+            ]
         },
-        {
-            path:'/ClientHomePage/PasswordManage',
-            name:'ClientPasswordManage',
-            component: ClientPasswordManage,
-            meta:{
-                requiresAuth: false
-            }
-        },
-        {
-            path:'/ClientHomePage/AnnouncementManage',
-            name:'ClientAnnouncementManage',
-            component: ClientAnnouncementManage,
-            meta:{
-                requiresAuth: false
-            }
-        },
-        {
-            path:'/ClientHomePage/Config',
-            name:'ClientConfig',
-            component: ClientConfig,
-            meta:{
-                requiresAuth: false
-            }
-        },
+        // {
+        //     path:'/ClientHomePage/PasswordManage',
+        //     name:'ClientPasswordManage',
+        //     component: ClientPasswordManage,
+        //     meta:{
+        //         requiresAuth: false
+        //     }
+        // },
+        // {
+        //     path:'/ClientHomePage/AnnouncementManage',
+        //     name:'ClientAnnouncementManage',
+        //     component: ClientAnnouncementManage,
+        //     meta:{
+        //         requiresAuth: false
+        //     }
+        // },
+        // {
+        //     path:'/ClientHomePage/Config',
+        //     name:'ClientConfig',
+        //     component: ClientConfig,
+        //     meta:{
+        //         requiresAuth: false
+        //     }
+        // },
         {
             path:'/ServerHomePage',
             name:'ServerHomePage',
