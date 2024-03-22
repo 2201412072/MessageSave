@@ -1,23 +1,25 @@
 <template>
     <div>
-        <!-- 添加密码&待用密码 -->
-        <div class="add-password">
-            <el-button type="primary" @click="AddWindowVisible=true">Add password</el-button>
-            <el-button type="primary" @click="SearchPasswordUsing">Search password using</el-button>
-        </div>
-        <!-- 查询 -->
-        <div class="password-search">
-            <el-form :model="myform_password" :inline="true">
-                <el-form-item label="Application">
-                    <el-input v-model="myform_password.app" placeholder="Application"/>
-                </el-form-item>
-                <el-form-item label="Connect User">
-                    <el-input v-model="myform_password.connect_user" placeholder="Connect User"/>
-                </el-form-item>
-                <el-form-item>
-                    <el-icon @click="PasswordSearch"><Search /></el-icon>
-                </el-form-item>
-            </el-form>
+        <div class="top-div">
+            <!-- 添加密码&待用密码 -->
+            <div class="add-password">
+                <el-button type="primary" @click="AddWindowVisible=true">Add password</el-button>
+                <el-button type="primary" @click="SearchPasswordUsing">Search password using</el-button>
+            </div>
+            <!-- 查询 -->
+            <div class="password-search">
+                <el-form class="search-form" :model="myform_password" :inline="true">
+                    <el-form-item class="search-form-item" label="Application">
+                        <el-input v-model="myform_password.app" placeholder="Application"/>
+                    </el-form-item>
+                    <el-form-item label="Connect User">
+                        <el-input v-model="myform_password.connect_user" placeholder="Connect User"/>
+                    </el-form-item>
+                    <el-form-item>
+                        <el-icon @click="PasswordSearch"><Search /></el-icon>
+                    </el-form-item>
+                </el-form>
+            </div>
         </div>
         <!-- 数据表 -->
             <div class="password-table">
@@ -35,12 +37,14 @@
                         <template v-slot="scope"> 
                             <div class="users-div">
                                 <div class="users-show-div" v-for="connect_user in scope.row.connect_user" :key="connect_user">
-                                    <div class="status-circle" :class="stage_options[scope.row.stage-1]"></div>
+                                    <i class="status-circle" style="background: red" 
+                                        v-if="!stage_map.has(scope.row.app+'-'+scope.row.connect_user)"></i>
+                                    <i class="status-circle" style="background: yellow" 
+                                        v-if="stage_map.has(scope.row.app+'-'+scope.row.connect_user) && stage_map.get(scope.row.app+'-'+scope.row.connect_user)=='hasn\'t completed'"></i>
+                                    <i class="status-circle" style="background: green" 
+                                        v-if="stage_map.has(scope.row.app+'-'+scope.row.connect_user) && stage_map.get(scope.row.app+'-'+scope.row.connect_user)=='has complete'"></i>
                                     <span class="user-span" @click="ToggleButton(scope.row,connect_user)">{{connect_user}}</span>
                                     <el-button-group class="user-button-group">
-                                        <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]"  @click="LockPassword(connect_user,scope.row.app)" >
-                                            <el-icon><Lock /></el-icon>
-                                        </el-button>
                                         <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]" @click="UnlockPassword(connect_user,scope.row.app)" >
                                             <el-icon><Unlock /></el-icon>
                                         </el-button>
@@ -50,6 +54,9 @@
                                     </el-button-group>
                                 </div>
                                 <!-- :icon="Lock" :icon="Unlock" :icon="Delete" -->
+                                <el-button class="user-button" type="primary" @click="LockPassword(scope.row.app)" >
+                                    <el-icon><Lock /></el-icon>
+                                </el-button>
                                 <el-icon class="addpasswd-icon" @click="OpenAddWinowWithAPP(scope.row.app)"><CirclePlus/></el-icon>
                             </div>
                         </template>
@@ -184,6 +191,7 @@ export default{
                 connect_user: '',
             },
             password_map:new Map(),
+            stage_map:new Map(), // key:app+user value:stage (只记录解密的和正在解密的)
             myform_result:{
                 app:'',
                 connect_user:'',
@@ -191,16 +199,16 @@ export default{
             },
             AddWindowVisible: false,
             AddUIApp: '',
-            // stage_options:[
-            //     {label:"has completed",value:1},
-            //     {label:"hasn't completed",value:2},
-            //     {label:"all",value:3},
-            // ],
             stage_options:[
-                {label:"unlocked",class:'status-unlocked'},
-                {label:"unlockingd",class:'status-unlocking'},
-                {label:"locked",class:'status-locked'},
+                {label:"has completed",value:1},
+                {label:"hasn't completed",value:2},
+                {label:"all",value:3},
             ],
+            // stage_options:[
+            //     {label:"unlocked",class:'status-unlocked'},
+            //     {label:"unlockingd",class:'status-unlocking'},
+            //     {label:"locked",class:'status-locked'},
+            // ],
         };
     },
     components: {
@@ -241,18 +249,20 @@ export default{
         InitPasswordMap(){
             //初始化密码map，如果不在该map里，说明该应用没有收到解密的消息，或者压根没请求
             this.password_map.clear()
-            //console.log(this.tableData_result)
+            this.stage_map.clear()
+            // console.log(this.tableData_result)
             for(let i=0;i<this.tableData_result.length;i++){
-                if(this.tableData_result[i].stage=="has complete")
+                var app=this.tableData_result[i].app;
+                var user=this.tableData_result[i].connect_user;
+                var stage = this.tableData_result[i].stage;
+                this.stage_map.set(app+'-'+user,stage);
+                if(stage=="has complete")
                 {
-                    //console.log(i," has complete")
-                    //console.log(this.tableData_result[i])
-                    //this.password_map[this.tableData_result[i].connect_user]=this.tableData_result[i].password
-                    this.password_map.set(this.tableData_result[i].app, this.tableData_result[i].password);
-                    //this.$set(this.password_map, this.tableData_result[i].connect_user, this.tableData_result[i].password);
+                    this.password_map.set(app, this.tableData_result[i].password);
                 }
             }
-            console.log(this.password_map)
+            // console.log(this.password_map);
+            console.log('stage map:',this.stage_map);
         },
         GetValueByKey(key){
                 if (this.password_map.has(key)) {
@@ -328,7 +338,7 @@ export default{
                 alert("请求失败");
             })
         },
-        LockPassword(connect_user,app){
+        LockPassword(app){
             // 将某密码复位，即重新回到加密状态
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Delete",{
                 "user_dst": "",
@@ -352,6 +362,7 @@ export default{
                 console.log('ask password ',response.data);
                 let inputValue="已经向 "+connect_user+" 请求"+app+"密码";
                 alert(inputValue);
+                this.stage_map.set(app+'-'+connect_user,"hasn't completed");
             },)
             .catch(response => {
                 console.log("error",response);
@@ -473,27 +484,59 @@ export default{
 </script>
 
 <style scoped>  
+.top-div{
+    background: white;
+    display: flex;
+    align-items: center;
+    margin-top: 5px;
+    margin-bottom: 5px;
+}
+
+.add-password{
+    margin-left: 10px;
+    margin-right: 10px;
+}
+
+.password-search{
+    display: flex;
+    align-items: center;
+}
+
 .status-circle {  
-  width: 20px;  
-  height: 20px;  
-  border-radius: 50%;  
-  display: inline-block;  
-  margin: 0 5px;  
-  vertical-align: middle;  
+  width:10px;
+  height:10px;
+  border-radius: 50%;
+  display: block;
+  margin-left: 10px;
+  margin-right: 5px;
 }  
 
-
-.status-unlocked {  
-  background-color: green; /* 状态1的颜色 */  
+/* .status-unlocked {  
+  width:10px;
+  height:10px;
+  border-radius: 50%;
+  display: block;
+  margin-left: 10px;  
+  background-color: green; 
 }  
   
 .status-unlocking {  
-  background-color: yellow; /* 状态2的颜色 */  
+  width:10px;
+  height:10px;
+  border-radius: 50%;
+  display: block;
+  margin-left: 10px; 
+  background-color: yellow;  
 }  
   
 .status-locked {  
-  background-color: red; /* 状态3颜色 */  
-}  
+  width:10px;
+  height:10px;
+  border-radius: 50%;
+  display: block;
+  margin-left: 10px; 
+  background-color: red; 
+}   */
 
 .users-div{
     display: flex;
@@ -529,4 +572,5 @@ export default{
     margin: 10 10 px;
     font-size:30px; 
 }
+
 </style>

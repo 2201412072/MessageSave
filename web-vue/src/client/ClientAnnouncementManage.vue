@@ -12,7 +12,7 @@
                 <el-input v-model="myform.operate" placeholder="Operate"/>
             </el-form-item>
             <el-form-item>
-                <el-icon @click="PasswordSearch"><Search /></el-icon>
+                <el-icon @click="SearchPassword"><Search /></el-icon>
             </el-form-item>
         </el-form>  
         <!-- 消息卡片 -->
@@ -162,6 +162,9 @@ export default{
                 console.log("error",error);
                 alert("请求失败");
             })
+        },
+        SearchPassword(){
+
         },
         handleAgreeAnnoncement(index,temp1,temp2){
             this.tableData.splice(index, 1);

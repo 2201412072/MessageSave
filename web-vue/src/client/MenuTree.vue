@@ -61,4 +61,8 @@ export default ({
 .menu-item-span{
     font-size: 20px;
 }
+
+.el-icon{
+    font-size:25px;
+}
 </style>

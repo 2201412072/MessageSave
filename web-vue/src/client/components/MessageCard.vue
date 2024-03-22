@@ -48,9 +48,6 @@ export default({
             type:Function,
         }
     },
-    data(){
-
-    },
     methods:{
 
     }

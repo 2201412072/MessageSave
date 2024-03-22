@@ -81,10 +81,25 @@ export default ({
 }
 
 .header{
-  background: #a1e9d2;
+  background: 'white';
   height:50px;
   display: block;
   align-content: center;
 }
 
+.main{
+  background: rgb(241, 244, 246);
+}
+
+.el-main{
+  width: 100%;
+  height: 100%;
+  text-align: center;
+  background: #efefef;
+  padding: 0px !important;
+}
+
+.el-icon{
+    font-size:25px;
+}
 </style>

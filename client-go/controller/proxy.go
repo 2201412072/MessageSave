@@ -3,18 +3,12 @@ package controller
 import (
 	"client-go/model"
 	"client-go/util"
-	"container/list"
 	"crypto/rsa"
 	"encoding/json"
 	"fmt"
-	"net/rpc"
 
 	"gopkg.in/antage/eventsource.v1"
 )
-
-var client *rpc.Client
-var msgChannel chan string
-var msgQueue list.List
 
 // var ResponseMsgQueue list.List //这是回应消息队列
 var es eventsource.EventSource
@@ -131,9 +125,6 @@ func RecvMessage() {
 			// 	return
 			// }
 		}
-		for _, msg := range messages {
-			msgQueue.PushBack(msg)
-		}
 		//这里是处理message的函数，要求能够针对不同类型的message来修改不同数据库
 		for _, msg := range messages {
 			deal_messages(msg)
@@ -143,16 +134,6 @@ func RecvMessage() {
 		// es.SendEventMessage(fmt.Sprintf("send data: %s", time.Now().Format("2006-01-02 15:04:05")), "time", "")
 		// es.SendEventMessage(string(msgQueue.Len()), "msgQueue len", "")
 	}
-	// 后端主动向前端推送消息，使用SSE（不用WebSocket了）
-	// for msg := range messages {
-	// 	// msgByte, _ := json.Marshal(msg)
-	// 	// msgChannel <- string(msgByte)
-
-	// 	// 只设置发送数据，不添加事件名
-	// 	es.SendEventMessage(fmt.Sprintf("send data: %s", time.Now().Format("2006-01-02 15:04:05")), "time", "")
-
-	// 	// es.SendEventMessage(msg, "msg", "")
-	// }
 }
 
 // 发送消息中转服务器至关联用户

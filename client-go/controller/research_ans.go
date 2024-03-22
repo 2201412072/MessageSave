@@ -39,6 +39,7 @@ func GetResearchAns(ctx *gin.Context) {
 		}
 
 	}
+	// fmt.Println("researchAns:", result)
 	//ans, _ := model.GetResearchAns(username, dst_user, application, stage)
 	// 回复前端
 	ctx.JSON(200, result)
