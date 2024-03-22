@@ -21,7 +21,7 @@ func GetPublicKey(ctx *gin.Context) {
 			ans = make([]modelview.PublicKeyUserSend, len(public_keys))
 			for i := 0; i < len(public_keys); i++ {
 				// ans[i],_ = util.PublicKey_from_bytes(public_keys[i])
-				ans[i].Public_key, _ = util.Base_bytes2utf_string(public_keys[i].Public_key)
+				ans[i].Public_key, _ = util.Bytes2base_string(public_keys[i].Public_key)
 				ans[i].Connect_user = public_keys[i].Username
 			}
 		}
@@ -30,7 +30,7 @@ func GetPublicKey(ctx *gin.Context) {
 		public_key, _ = model.GetPublicKeyByUser(requestMap.Username)
 		if len(public_key) > 0 {
 			ans = make([]modelview.PublicKeyUserSend, 1)
-			ans[0].Public_key, _ = util.Base_bytes2utf_string(public_key)
+			ans[0].Public_key, _ = util.Bytes2base_string(public_key)
 			ans[0].Connect_user = requestMap.Username
 		}
 	}

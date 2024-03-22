@@ -59,7 +59,7 @@ export default createRouter({
                     component:ClientAnnouncementManage,
                 },
                 {
-                    path:'ClientConfig',
+                    path:'Config',
                     name:'ClientConfig',
                     component:ClientConfig,
                 },

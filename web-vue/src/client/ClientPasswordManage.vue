@@ -279,7 +279,7 @@ export default{
                 return 
             }
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Search",{
-                "username": myform.connect_user,
+                "connect_user": myform.connect_user,
                 "app":myform.app,
             })
             .then(response => {
@@ -312,7 +312,7 @@ export default{
         PasswordSearchAll(){
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Search",{
                 "app":"",
-                "username":"",
+                "connect_user":"",
             })
             .then(response=>{
                 this.tableData=response.data;

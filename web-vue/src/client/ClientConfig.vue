@@ -65,7 +65,7 @@ export default{
     methods:{
         SearchAll(){
             axios.post("http://localhost:8090/ClientHomePage/Config/PublicKey-Search",{
-                "Username":"",
+                "connect_user":"",
             })
             .then(response=>{
                 if(response.data.length==0) {
@@ -86,7 +86,7 @@ export default{
             var myform = this.myform
             console.log('connect_user',myform.connect_user);
             axios.post("http://localhost:8090/ClientHomePage/Config/PublicKey-Search",{
-                "Username": myform.connect_user,
+                "connect_user": myform.connect_user,
             })
             .then(response => {
                 if(response.data.length==0){
@@ -110,7 +110,7 @@ export default{
         handleDelete(index,temp){
             this.tableData.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/Config/PublicKey-Delete",{
-                "Username": temp,
+                "connect_user": temp,
             })
             .then(response => {
                     console.log('delete.');
