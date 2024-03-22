@@ -28,6 +28,9 @@
                     <el-table-column label='Application' width="180">
                         <template v-slot="scope"> {{scope.row.app}}</template>
                     </el-table-column>  
+                    <el-table-column label='Password' width="180">
+                        <template v-slot="scope"> {{GetValueByKey(scope.row.app)}}</template>
+                    </el-table-column>
                     <el-table-column label='Connect User' width="600">
                         <template v-slot="scope"> 
                             <div class="users-div">
@@ -35,13 +38,13 @@
                                     <div class="status-circle" :class="stage_options[scope.row.stage-1]"></div>
                                     <span class="user-span" @click="ToggleButton(scope.row,connect_user)">{{connect_user}}</span>
                                     <el-button-group class="user-button-group">
-                                        <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]"  @click="LockPassword(scope.row.connect_user,scope.row.app)" >
+                                        <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]"  @click="LockPassword(connect_user,scope.row.app)" >
                                             <el-icon><Lock /></el-icon>
                                         </el-button>
-                                        <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]" @click="UnlockPassword(scope.row.connect_user,scope.row.app)" >
+                                        <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]" @click="UnlockPassword(connect_user,scope.row.app)" >
                                             <el-icon><Unlock /></el-icon>
                                         </el-button>
-                                        <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]" @click="DeletePassword(scope.$index,scope.row.connect_user,scope.row.app)" >
+                                        <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]" @click="DeletePassword(scope.$index,connect_user,scope.row.app)" >
                                             <el-icon><Delete /></el-icon>
                                         </el-button>
                                     </el-button-group>
@@ -59,6 +62,14 @@
                     </el-table-column> -->
                 </el-table>
             </div>
+            <!-- 调试用，调试完记住删 -->
+        <!-- <div class="show-test">
+            <button @click="InitPasswordMap">button</button>
+            <div>
+                {{this.password_map}}
+            </div>
+            
+        </div> -->
     </div>
 
     <!-- 添加密码界面 -->
@@ -172,6 +183,7 @@ export default{
                 app:'',
                 connect_user: '',
             },
+            password_map:new Map(),
             myform_result:{
                 app:'',
                 connect_user:'',
@@ -226,18 +238,39 @@ export default{
             row.ButtonVisible[connect_user] = !row.ButtonVisible[connect_user];
             // this.$set(row.ButtonVisible,connect_user,!row.ButtonVisible[connect_user]);
         },
-
-
+        InitPasswordMap(){
+            //初始化密码map，如果不在该map里，说明该应用没有收到解密的消息，或者压根没请求
+            this.password_map.clear()
+            //console.log(this.tableData_result)
+            for(let i=0;i<this.tableData_result.length;i++){
+                if(this.tableData_result[i].stage=="has complete")
+                {
+                    //console.log(i," has complete")
+                    //console.log(this.tableData_result[i])
+                    //this.password_map[this.tableData_result[i].connect_user]=this.tableData_result[i].password
+                    this.password_map.set(this.tableData_result[i].app, this.tableData_result[i].password);
+                    //this.$set(this.password_map, this.tableData_result[i].connect_user, this.tableData_result[i].password);
+                }
+            }
+            console.log(this.password_map)
+        },
+        GetValueByKey(key){
+                if (this.password_map.has(key)) {
+                    return this.password_map.get(key);
+                } else {
+                    return "******";
+                }
+        },
         PasswordSearch(){
             var myform = this.myform_password
             if(myform.app==""&&myform.connect_user=="")
             {
-                self.PasswordSearchAll()
+                this.PasswordSearchAll()
                 return 
             }
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Search",{
-                "Username": myform.connect_user,
-                "Application":myform.app,
+                "username": myform.connect_user,
+                "app":myform.app,
             })
             .then(response => {
                     console.log('password search, APP:',myform.app,' Username:',myform.connect_user);
@@ -250,11 +283,26 @@ export default{
                 console.log("error",response);
                 alert("请求失败");
             })
+
+            //获取密码
+            axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Search",{
+                "connect_user": myform.connect_user,
+                "app":myform.app,
+            })
+            .then(response => {
+                    this.tableData_result = response.data;
+                    this.InitPasswordMap();
+                },
+            )
+            .catch(response => {
+                console.log("error",response);
+                alert("请求失败");
+            })
         },
         PasswordSearchAll(){
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Search",{
-                "Application":"",
-                "Username":"",
+                "app":"",
+                "username":"",
             })
             .then(response=>{
                 this.tableData=response.data;
@@ -264,9 +312,36 @@ export default{
                 console.log("error",error);
                 alert("请求失败");
             })
+
+             //获取密码
+            axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Search",{
+                "connect_user": "",
+                "app":"",
+            })
+            .then(response => {
+                    this.tableData_result = response.data;
+                    this.InitPasswordMap();
+                },
+            )
+            .catch(response => {
+                console.log("error",response);
+                alert("请求失败");
+            })
         },
         LockPassword(connect_user,app){
             // 将某密码复位，即重新回到加密状态
+            axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Delete",{
+                "user_dst": "",
+                "application":app,
+            })
+            .then(response => {
+                console.log('delete result ans ',response.data);
+            },)
+            .catch(response => {
+                console.log("error",response);
+                alert("请求失败");
+            });
+            this.password_map.delete(app)
         },
         UnlockPassword(connect_user,app){
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/SearchPassword",{
@@ -285,7 +360,16 @@ export default{
         },
         DeletePassword(index,connect_user,app){
             console.log('delete user:',connect_user,' app:',app)
-            this.tableData.splice(index, 1);
+            console.log("tabledata[index]:",this.tableData[index])
+            if(this.tableData[index].connect_user.length==1)
+                this.tableData.splice(index, 1);
+            else{
+                //只能删tabledata list里面的一个
+                let listindex = this.tableData[index].connect_user.indexOf(connect_user);
+                if (listindex !== -1) {
+                this.tableData[index].connect_user.splice(listindex, 1);
+                }
+            }
             axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Delete",{
                 "connect_user":connect_user,
                 "app":app,

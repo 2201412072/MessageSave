@@ -179,7 +179,7 @@ export default{
             })
         },
         handleAgreeRequest(index,temp1,temp2){
-            this.tableData_request.splice(index, 1);
+            this.tableData.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Agree",{
                 "SrcUser": temp1,
                 "KeyWord":temp2,
@@ -194,7 +194,7 @@ export default{
             })
         },
         handleDisagreeRequest(index,temp1,temp2){
-            this.tableData_request.splice(index, 1);
+            this.tableData.splice(index, 1);
             axios.post("http://localhost:8090/ClientHomePage/AnnouncementManage/Request-Disagree",{
                 "SrcUser": temp1,
                 "KeyWord":temp2,

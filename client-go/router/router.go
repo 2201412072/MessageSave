@@ -41,14 +41,14 @@ func SetupRouter() *gin.Engine {
 	// 密码管理结果查询
 	r.POST("/ClientHomePage/PasswordManage/Result-Search", controller.GetResearchAns)
 	// 密码管理结果删除
-	r.POST("/ClientHomePag/PasswordManage/Result-Delete", controller.DeleteResearchAns)
+	r.POST("/ClientHomePage/PasswordManage/Result-Delete", controller.DeleteResearchAns)
 	// 消息管理
 	// 密码添加请求查询
-	r.POST("/ClientHomePage/AnnouncementManage/Add-Search", controller.GetAddMessage)
+	//r.POST("/ClientHomePage/AnnouncementManage/Add-Search", controller.GetAddMessage)
 	// 密码添加请求删除
 	r.POST("/ClientHomePage/AnnouncementManage/Add-Delete", controller.DeleteAddMessage)
 	// 消息查询
-	r.POST("/ClientHomePage/AnnouncementManage/Request-Search", controller.GetMessage)
+	//r.POST("/ClientHomePage/AnnouncementManage/Request-Search", controller.GetRequestMessage)
 	// 消息删除
 	r.POST("/ClientHomePage/AnnouncementManage/Request-Delete", controller.DeleteMessage)
 	// 解密请求同意

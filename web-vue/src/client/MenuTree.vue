@@ -16,7 +16,7 @@
                 <!-- 没有次级菜单的 -->
                 <el-menu-item class="menu-item" v-if="!item.children" :key="item.id" :index="item.url">
                     <el-icon v-if="item.icon!=''"><component :is="item.icon" /></el-icon>
-                    <span class="menu-item-span">{{item.name}}</span>
+                    <span class="menu-item-span" @click="redirectToUrl(item.url)">{{item.name}}</span>
                 </el-menu-item>
             </template>
         </el-menu>
@@ -40,7 +40,10 @@ export default ({
         Key,Service,Setting,Box,
     },
     methods:{
-        tempfunction(){}
+        tempfunction(){},
+        redirectToUrl(url){
+            window.location.href = url; 
+        },
     },
 })
 </script>

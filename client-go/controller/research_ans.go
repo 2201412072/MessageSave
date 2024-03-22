@@ -3,6 +3,7 @@ package controller
 import (
 	"client-go/model"
 	"client-go/model/modelview"
+	"fmt"
 
 	"github.com/gin-gonic/gin"
 )
@@ -10,7 +11,7 @@ import (
 // 获取查询结果
 func GetResearchAns(ctx *gin.Context) {
 	// 解析表单输入
-	var requestMap model.ResearchAns
+	var requestMap modelview.ResearchAns
 	ctx.ShouldBind(&requestMap)
 	dst_user := requestMap.DstUser
 	application := requestMap.Application
@@ -31,7 +32,12 @@ func GetResearchAns(ctx *gin.Context) {
 		result[i].DstUser = v.DstUser
 		result[i].Application = v.Application
 		result[i].Stage = v.Stage
-		result[i].Password, _ = Deal_B2A_message_to_utf(v.Password)
+		if v.Stage == "has complete" {
+			result[i].Password, _ = Deal_B2A_message_to_utf(v.Password)
+		} else {
+			result[i].Password = ""
+		}
+
 	}
 	//ans, _ := model.GetResearchAns(username, dst_user, application, stage)
 	// 回复前端
@@ -46,7 +52,12 @@ func DeleteResearchAns(ctx *gin.Context) {
 	dst_user := requestMap.DstUser
 	application := requestMap.Application
 	// 删除查询结果
-	model.DeleteResearchAns(username, dst_user, application)
+	fmt.Println("user:", dst_user, " application:", application)
+	if dst_user == "" {
+		model.DeleteResearchAnsByApp(application)
+	} else {
+		model.DeleteResearchAns(username, dst_user, application)
+	}
 	// 回复前端
 	ctx.JSON(200, gin.H{"msg": "delete over."})
 }

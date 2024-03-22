@@ -32,13 +32,45 @@ import (
 // 	ctx.JSON(200, messages)
 // }
 
-// 获取未处理的消息，最近的版本，思路是：只获取本地缓存消息，至于服务器端的消息，单独设置一个函数、消息格式用来爬取，
-// 该函数只要被调用，就已经假设本地消息是完整的了
 func GetMessage(ctx *gin.Context) {
+	//获取两部分内容，一是A加密后，向B通知的信息，二是A请求B加密的信息
+	//一A加密后，向B通知的信息
 	var requestMap modelview.Message2
 	ctx.ShouldBind(requestMap)
 	src_user := requestMap.SrcUser //src是对面发消息的客户端，而dst肯定是本机，不用管
 	key_word := requestMap.KeyWord
+	result := GetRequestMessage(src_user, key_word)
+	temp := GetAddMessage(src_user, key_word)
+	result = append(result, temp...)
+	ctx.JSON(200, result)
+}
+
+// 获取未处理的消息，最近的版本，思路是：只获取本地缓存消息，至于服务器端的消息，单独设置一个函数、消息格式用来爬取，
+// 该函数只要被调用，就已经假设本地消息是完整的了
+// func GetRequestMessage(ctx *gin.Context) {
+// 	var requestMap modelview.Message2
+// 	ctx.ShouldBind(requestMap)
+// 	src_user := requestMap.SrcUser //src是对面发消息的客户端，而dst肯定是本机，不用管
+// 	key_word := requestMap.KeyWord
+// 	var messages []model.Message
+// 	if src_user == "" && key_word == "" {
+// 		messages, _ = model.GetMessageByOperate("DecryptRequest2Client")
+// 	} else if src_user == "" {
+// 		messages, _ = model.GetMessageByMap(map[string]string{"Operate": "DecryptRequest2Client", "KeyWord": key_word})
+// 	} else if key_word == "" {
+// 		messages, _ = model.GetMessageByMap(map[string]string{"Operate": "DecryptRequest2Client", "SrcUser": src_user})
+// 	} else {
+// 		messages, _ = model.GetMessageByMap(map[string]string{"Operate": "DecryptRequest2Client", "SrcUser": src_user, "KeyWord": key_word})
+// 	}
+// 	result_messages := make([]modelview.Message, len(messages))
+// 	for i, v := range messages {
+// 		result_messages[i] = modelview.Message{SrcUser: v.SrcUser, KeyWord: v.KeyWord, Operate: v.Operate}
+// 	}
+// 	ctx.JSON(200, result_messages)
+// }
+
+func GetRequestMessage(src_user string, key_word string) []modelview.Message {
+	//获取A请求本机加密的信息
 	var messages []model.Message
 	if src_user == "" && key_word == "" {
 		messages, _ = model.GetMessageByOperate("DecryptRequest2Client")
@@ -53,17 +85,8 @@ func GetMessage(ctx *gin.Context) {
 	for i, v := range messages {
 		result_messages[i] = modelview.Message{SrcUser: v.SrcUser, KeyWord: v.KeyWord, Operate: v.Operate}
 	}
-	ctx.JSON(200, result_messages)
+	return result_messages
 }
-
-// func GetMessage(ctx *gin.Context) {
-// 	local_messages, _ := model.GetMessages()
-// 	result_messages := make([]modelview.Message, len(local_messages))
-// 	for i, v := range local_messages {
-// 		result_messages[i] = modelview.Message{Connect_user: v.SrcUser, App: v.KeyWord}
-// 	}
-// 	ctx.JSON(200, result_messages)
-// }
 
 // 删除消息
 func DeleteMessage(ctx *gin.Context) {
@@ -155,12 +178,33 @@ func DisagreeMessage(ctx *gin.Context) {
 	}
 }
 
-func GetAddMessage(ctx *gin.Context) {
-	// 解析表单输入
-	var requestMap modelview.Message2
-	ctx.ShouldBind(&requestMap)
-	src_user := requestMap.SrcUser
-	key_word := requestMap.KeyWord
+// func GetAddMessage(ctx *gin.Context) {
+// 	// 解析表单输入
+// 	var requestMap modelview.Message2
+// 	ctx.ShouldBind(&requestMap)
+// 	src_user := requestMap.SrcUser
+// 	key_word := requestMap.KeyWord
+// 	// 查询对应添加请求
+// 	var messages []model.Message
+// 	if src_user == "" && key_word == "" {
+// 		messages, _ = model.GetMessageByOperate("EncryptAnnocement2Client")
+// 	} else if src_user == "" {
+// 		messages, _ = model.GetMessageByMap(map[string]string{"Operate": "EncryptAnnocement2Client", "KeyWord": key_word})
+// 	} else if key_word == "" {
+// 		messages, _ = model.GetMessageByMap(map[string]string{"Operate": "EncryptAnnocement2Client", "SrcUser": src_user})
+// 	} else {
+// 		messages, _ = model.GetMessageByMap(map[string]string{"Operate": "EncryptAnnocement2Client", "SrcUser": src_user, "KeyWord": key_word})
+// 	}
+// 	result_messages := make([]modelview.Message, len(messages))
+// 	for i, v := range messages {
+// 		result_messages[i] = modelview.Message{SrcUser: v.SrcUser, KeyWord: v.KeyWord, Operate: v.Operate}
+// 	}
+// 	// 回复前端
+// 	ctx.JSON(200, result_messages)
+// }
+
+func GetAddMessage(src_user string, key_word string) []modelview.Message {
+	//获取A加密后，向本机通知的信息
 	// 查询对应添加请求
 	var messages []model.Message
 	if src_user == "" && key_word == "" {
@@ -176,8 +220,7 @@ func GetAddMessage(ctx *gin.Context) {
 	for i, v := range messages {
 		result_messages[i] = modelview.Message{SrcUser: v.SrcUser, KeyWord: v.KeyWord, Operate: v.Operate}
 	}
-	// 回复前端
-	ctx.JSON(200, result_messages)
+	return result_messages
 }
 
 func DeleteAddMessage(ctx *gin.Context) {
