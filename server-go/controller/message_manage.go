@@ -9,7 +9,7 @@ import (
 
 func GetMessage(ctx *gin.Context) {
 	//搜索message，具体而言就是考虑不同参数是否为空的问题
-	var requestMap model.Message
+	var requestMap modelview.Message
 	ctx.ShouldBind(&requestMap)
 	src_user := requestMap.SrcUser
 	dst_user := requestMap.DstUser
@@ -32,11 +32,10 @@ func GetMessage(ctx *gin.Context) {
 	var result []map[string]interface{}
 	for _, item := range message_data {
 		tempMap := map[string]interface{}{
-			"src_user":    item.SrcUser,
-			"dst_user":    item.DstUser,
-			"application": item.KeyWord,
-			"operate":     item.Operate,
-			"param":       item.Params,
+			"src_user": item.SrcUser,
+			"dst_user": item.DstUser,
+			"keyword":  item.KeyWord,
+			"operator": item.Operate,
 			// "password2":    item.Saved_key,
 		}
 		result = append(result, tempMap)
@@ -52,8 +51,9 @@ func DeleteMessage(ctx *gin.Context) {
 	src_user := requestMap.SrcUser
 	dst_user := requestMap.DstUser
 	application := requestMap.KeyWord
+	operator := requestMap.Operate
 	// 删除数据库中的密码
-	model.DeleteMessage(src_user, dst_user, application)
+	model.DeleteMessage(src_user, dst_user, application, operator)
 	// 回复前端
 	ctx.JSON(200, gin.H{"msg": "delete over."})
 }

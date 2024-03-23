@@ -24,7 +24,7 @@ func GetAllUserPassword() ([]UserPassword, int) {
 
 func GetUserPassword(user string) (UserPassword, int) {
 	var temp UserPassword
-	err := database.Where("User=? ", user).First(&temp).Error
+	err := database.Where("user=? ", user).First(&temp).Error
 	if err != nil {
 		if err == gorm.ErrRecordNotFound {
 			return temp, 0
@@ -47,7 +47,7 @@ func AddUserPassword(user string, password string) int {
 }
 
 func DeleteUserPassword(user string) int {
-	result := database.Where("User=?", user).Delete(&UserPassword{})
+	result := database.Where("user=?", user).Delete(&UserPassword{})
 	if result.Error != nil {
 		return 0
 	}

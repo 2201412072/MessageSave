@@ -24,7 +24,7 @@
                         <el-table-column label='Connect User' width="180">
                             <template v-slot="scope"> {{scope.row.connect_user}}</template>
                         </el-table-column>  
-                        <el-table-column label='Public Key' width="180">
+                        <el-table-column label='Password' width="180">
                             <template v-slot="scope"> {{scope.row.password}}</template>
                         </el-table-column>    
                         <el-table-column label="Operate">
@@ -56,7 +56,9 @@ export default{
     },
     methods:{
         SearchAll(){
-            axios.get("http://localhost:8090/ServerHomePage/PasswordManage/Password-SearchAll")
+            axios.post("http://localhost:8090/ServerHomePage/PasswordManage/Password-SearchAll",{
+                "connect_user": "",
+            })
             .then(response=>{
                 this.tableData=response.data;
                 console.log('get password data.',this.tableData);

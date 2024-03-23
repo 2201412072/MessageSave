@@ -56,7 +56,9 @@ export default{
     },
     methods:{
         SearchAll(){
-            axios.get("http://localhost:8090/ServerHomePage/PublicKeyManage/PublicKey-SearchAll")
+            axios.post("http://localhost:8090/ServerHomePage/PublicKeyManage/PublicKey-SearchAll",{
+                "connect_user": "",
+            })
             .then(response=>{
                 this.tableData=response.data;
                 console.log('get publickey data.',this.tableData);

@@ -114,7 +114,7 @@ func deal_message_DecryptRequest(msg model.Message) int {
 	msg.DstUser = src_user
 	if send_realtime_messge(msg) == 1 {
 		//在线，发送过去了
-		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord)
+		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord, msg.Operate)
 	}
 	return 1
 }
@@ -131,7 +131,7 @@ func deal_message_EncryptAnnocement(msg model.Message) int {
 	msg.Operate = "EncryptAnnocement2Client"
 	if send_realtime_messge(msg) == 1 {
 		//在线，发送过去了
-		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord)
+		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord, msg.Operate)
 	}
 	return 1
 }
@@ -148,7 +148,7 @@ func deal_message_DecryptMessage(msg model.Message) int {
 	msg.Operate = "DecryptMessage2Client"
 	if send_realtime_messge(msg) == 1 {
 		//在线，发送过去了
-		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord)
+		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord, msg.Operate)
 	}
 	return 1
 }
@@ -191,7 +191,7 @@ func deal_message_DecryptRequestDisAgree(msg model.Message) int {
 	msg.Operate = "DecryptRequestDisAgree2Client"
 	if send_realtime_messge(msg) == 1 {
 		//在线，发送过去了
-		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord)
+		model.DeleteMessage(msg.SrcUser, msg.DstUser, msg.KeyWord, msg.Operate)
 	}
 	return 1
 }

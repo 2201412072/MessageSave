@@ -5,7 +5,7 @@ type Message struct {
 	DstUser string `gorm:"primaryKey;column:user_dst;references:userpassword:user"`
 	KeyWord string `gorm:"primaryKey;column:keyword;references:password:application"`
 	// Time         time.Time `gorm:"column:mytime"` //primaryKey;
-	Operate string
+	Operate string `gorm:"primaryKey"`
 	Params  string
 }
 
@@ -17,7 +17,7 @@ func GetMessages() ([]Message, int) {
 
 func GetMessage(src_user string, dst_user string, key_word string) (Message, int) {
 	var temp Message
-	database.Where("SrcUser=? AND DstUser=? AND KeyWord=?", src_user, dst_user, key_word).First(&temp)
+	database.Where("user_src=? AND user_dst=? AND keyword=?", src_user, dst_user, key_word).First(&temp)
 	return temp, 1
 }
 
@@ -53,8 +53,8 @@ func AddMessage(msg Message) int {
 	return 1
 }
 
-func DeleteMessage(src_user string, dst_user string, application string) int {
-	result := database.Where("user_src=? AND user_dst=? AND keyword=?", src_user, dst_user, application).Delete(&Message{})
+func DeleteMessage(src_user string, dst_user string, application string, operator string) int {
+	result := database.Where("user_src=? AND user_dst=? AND keyword=? AND Operate=?", src_user, dst_user, application, operator).Delete(&Message{})
 	if result.Error != nil {
 		return 0
 	}

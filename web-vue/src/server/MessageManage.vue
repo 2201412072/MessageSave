@@ -11,6 +11,9 @@
                         <el-form-item label="Destination User">
                             <el-input v-model="myform.dst_user" placeholder="Destination User"/>
                         </el-form-item>
+                        <el-form-item label="Application">
+                            <el-input v-model="myform.keyword" placeholder="Application"/>
+                        </el-form-item>
                         <el-form-item>
                             <el-button type="primary" @click="Search">Search</el-button>
                             <el-button type="primary" @click="SearchAll">SearchAll</el-button>
@@ -25,17 +28,20 @@
                             <template v-slot="scope"> {{scope.$index}}</template>
                         </el-table-column>
                         <el-table-column label='Application' width="180">
-                            <template v-slot="scope"> {{scope.row.app}}</template>
+                            <template v-slot="scope"> {{scope.row.keyword}}</template>
                         </el-table-column>  
                         <el-table-column label='Source User' width="180">
                             <template v-slot="scope"> {{scope.row.src_user}}</template>
                         </el-table-column>  
                         <el-table-column label='Destination User' width="180">
                             <template v-slot="scope"> {{scope.row.dst_user}}</template>
-                        </el-table-column>    
+                        </el-table-column> 
+                        <el-table-column label='Type' width="180">
+                            <template v-slot="scope"> {{scope.row.operator}}</template>
+                        </el-table-column>     
                         <el-table-column label="Operate">
                             <template v-slot="scope">
-                                <el-button type="danger" @click="handleDelete(scope.$index,scope.row.src_user,scope.row.dst_user)">delete</el-button>
+                                <el-button type="danger" @click="handleDelete(scope.$index,scope.row.src_user,scope.row.dst_user,scope.row.keyword,scope.row.operator)">delete</el-button>
                             </template>
                         </el-table-column>
                     </el-table>
@@ -55,6 +61,8 @@ export default{
             myform:{
                 src_user: '',
                 dst_user:'',
+                keyword:'',
+                operator:'',
             }
         };
     },
@@ -63,7 +71,12 @@ export default{
     },
     methods:{
         SearchAll(){
-            axios.get("http://localhost:8090/ServerHomePage/MessageManage/Message-SearchAll")
+            axios.post("http://localhost:8090/ServerHomePage/MessageManage/Message-SearchAll",{
+                "src_user": "",
+                "dst_user": "",
+                "keyword":"",
+                "operator":"",
+            })
             .then(response=>{
                 this.tableData=response.data;
                 console.log('get message data.',this.tableData);
@@ -83,6 +96,8 @@ export default{
                 axios.post("http://localhost:8090/ServerHomePage/MessageManage/Message-Search",{
                     "src_user": myform.src_user,
                     "dst_user": myform.dst_user,
+                    "keyword":myform.keyword,
+                    "operator":myform.operator,
                 })
                 .then(response => {
                         console.log('get message data.',response.data);
@@ -100,11 +115,13 @@ export default{
             this.myform.src_user = '';
             this.myform.dst_user = '';
         },
-        handleDelete(index,temp1,temp2){
+        handleDelete(index,temp1,temp2,temp3,temp4){
             this.tableData.splice(index, 1);
             axios.post("http://localhost:8090/ServerHomePage/MessageManage/Message-Delete",{
                 "src_user": temp1,
                 "dst_user":temp2,
+                "keyword":temp3,
+                "operator":temp4,
             })
             .then(response => {
                     console.log('delete.');
