@@ -40,6 +40,7 @@ func SavePassword(ctx *gin.Context) {
 			}
 			//将该加密信息发送给服务器，然后服务器代为转发给对应的客户端
 			var message model.Message
+			message.SrcUser = username
 			message.DstUser = user
 			message.Operate = "EncryptAnnocement2Server"
 			message.KeyWord = application

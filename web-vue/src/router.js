@@ -6,6 +6,7 @@ import ClientHomePage from '@/client/ClientHomePage.vue';
 import ClientPasswordManage from '@/client/ClientPasswordManage.vue';
 import ClientAnnouncementManage from '@/client/ClientAnnouncementManage.vue';
 import ClientConfig from '@/client/ClientConfig.vue';
+import ClientPublicKeyManage from '@/client/ClientPublicKeyManage.vue';
 
 import ServerHomePage from '@/server/ServerHomePage.vue';
 import ServerPublicKeyManage from '@/server/PublicKeyManage.vue';
@@ -62,6 +63,11 @@ export default createRouter({
                     path:'Config',
                     name:'ClientConfig',
                     component:ClientConfig,
+                },
+                {
+                    path:'PublicKeyManage',
+                    name:'ClientPublicKeyManage',
+                    component:ClientPublicKeyManage,
                 },
             ]
         },

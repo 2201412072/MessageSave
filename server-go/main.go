@@ -12,6 +12,7 @@ func main() {
 	// 设置路由
 	go controller.InitProxy()
 	r := router.SetupRouter()
-	r.Run("127.0.0.1:8090")
+	// r.Run("127.0.0.1:8090")
+	r.Run("127.0.0.1:8092")
 
 }

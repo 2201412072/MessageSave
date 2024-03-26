@@ -35,13 +35,24 @@ import (
 func GetMessage(ctx *gin.Context) {
 	//获取两部分内容，一是A加密后，向B通知的信息，二是A请求B加密的信息
 	//一A加密后，向B通知的信息
-	var requestMap modelview.Message2
-	ctx.ShouldBind(requestMap)
+	var requestMap modelview.Message
+	ctx.ShouldBind(&requestMap)
 	src_user := requestMap.SrcUser //src是对面发消息的客户端，而dst肯定是本机，不用管
 	key_word := requestMap.KeyWord
-	result := GetRequestMessage(src_user, key_word)
-	temp := GetAddMessage(src_user, key_word)
-	result = append(result, temp...)
+	operate := requestMap.Operate
+	var result []modelview.Message
+	if operate == "DecryptRequest2Client" {
+		temp := GetRequestMessage(src_user, key_word)
+		result = append(result, temp...)
+	} else if operate == "EncryptAnnocement2Client" {
+		temp := GetAddMessage(src_user, key_word)
+		result = append(result, temp...)
+	} else if operate == "" {
+		temp1 := GetRequestMessage(src_user, key_word)
+		temp2 := GetAddMessage(src_user, key_word)
+		result = append(result, temp1...)
+		result = append(result, temp2...)
+	}
 	ctx.JSON(200, result)
 }
 

@@ -7,170 +7,70 @@
                 <el-button type="primary" @click="SearchPasswordUsing">Search password using</el-button>
             </div>
             <!-- 查询 -->
-            <div class="password-search">
-                <el-form class="search-form" :model="myform_password" :inline="true">
-                    <el-form-item class="search-form-item" label="Application">
-                        <el-input v-model="myform_password.app" placeholder="Application"/>
-                    </el-form-item>
-                    <el-form-item label="Connect User">
-                        <el-input v-model="myform_password.connect_user" placeholder="Connect User"/>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-icon @click="PasswordSearch"><Search /></el-icon>
-                    </el-form-item>
-                </el-form>
-            </div>
+            <el-form class="form" :model="myform_password" :inline="true">
+                <el-form-item class="el-form-item" label="Application">
+                    <el-input v-model="myform_password.app" placeholder="Application"/>
+                </el-form-item>
+                <el-form-item label="Connect User">
+                    <el-input v-model="myform_password.connect_user" placeholder="Connect User"/>
+                </el-form-item>
+                <el-form-item>
+                    <el-icon @click="PasswordSearch"><Search /></el-icon>
+                </el-form-item>
+            </el-form>
         </div>
         <!-- 数据表 -->
-            <div class="password-table">
-                <el-table :data="tableData" style="width:100%">
-                    <el-table-column label='Index' width="180">
-                        <template v-slot="scope"> {{scope.$index+1}}</template>
-                    </el-table-column>
-                    <el-table-column label='Application' width="180">
-                        <template v-slot="scope"> {{scope.row.app}}</template>
-                    </el-table-column>  
-                    <el-table-column label='Password' width="180">
-                        <template v-slot="scope"> {{GetValueByKey(scope.row.app)}}</template>
-                    </el-table-column>
-                    <el-table-column label='Connect User' width="600">
-                        <template v-slot="scope"> 
-                            <div class="users-div">
-                                <div class="users-show-div" v-for="connect_user in scope.row.connect_user" :key="connect_user">
-                                    <i class="status-circle" style="background: red" 
-                                        v-if="!stage_map.has(scope.row.app+'-'+scope.row.connect_user)"></i>
-                                    <i class="status-circle" style="background: yellow" 
-                                        v-if="stage_map.has(scope.row.app+'-'+scope.row.connect_user) && stage_map.get(scope.row.app+'-'+scope.row.connect_user)=='hasn\'t completed'"></i>
-                                    <i class="status-circle" style="background: green" 
-                                        v-if="stage_map.has(scope.row.app+'-'+scope.row.connect_user) && stage_map.get(scope.row.app+'-'+scope.row.connect_user)=='has complete'"></i>
-                                    <span class="user-span" @click="ToggleButton(scope.row,connect_user)">{{connect_user}}</span>
-                                    <el-button-group class="user-button-group">
-                                        <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]" @click="UnlockPassword(connect_user,scope.row.app)" >
-                                            <el-icon><Unlock /></el-icon>
-                                        </el-button>
-                                        <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]" @click="DeletePassword(scope.$index,connect_user,scope.row.app)" >
-                                            <el-icon><Delete /></el-icon>
-                                        </el-button>
-                                    </el-button-group>
-                                </div>
-                                <!-- :icon="Lock" :icon="Unlock" :icon="Delete" -->
-                                <el-button class="user-button" type="primary" @click="LockPassword(scope.row.app)" >
-                                    <el-icon><Lock /></el-icon>
-                                </el-button>
-                                <el-icon class="addpasswd-icon" @click="OpenAddWinowWithAPP(scope.row.app)"><CirclePlus/></el-icon>
+        <div class="password-table">
+            <el-table :data="tableData" style="width:100%">
+                <el-table-column label='Index' width="180">
+                    <template v-slot="scope"> {{scope.$index+1}}</template>
+                </el-table-column>
+                <el-table-column label='Application' width="180">
+                    <template v-slot="scope"> {{scope.row.app}}</template>
+                </el-table-column>  
+                <el-table-column label='Password' width="180">
+                    <template v-slot="scope"> {{GetValueByKey(scope.row.app)}}</template>
+                </el-table-column>
+                <el-table-column label='Connect User' width="600">
+                    <template v-slot="scope"> 
+                        <div class="users-div">
+                            <div class="users-show-div" v-for="connect_user in scope.row.connect_user" :key="connect_user">
+                                <i class="status-circle" style="background: red" 
+                                    v-if="!stage_map.has(scope.row.app+'-'+scope.row.connect_user)"></i>
+                                <i class="status-circle" style="background: yellow" 
+                                    v-if="stage_map.has(scope.row.app+'-'+scope.row.connect_user) && stage_map.get(scope.row.app+'-'+scope.row.connect_user)=='hasn\'t completed'"></i>
+                                <i class="status-circle" style="background: green" 
+                                    v-if="stage_map.has(scope.row.app+'-'+scope.row.connect_user) && stage_map.get(scope.row.app+'-'+scope.row.connect_user)=='has complete'"></i>
+                                <span class="user-span" @click="ToggleButton(scope.row,connect_user)">{{connect_user}}</span>
+                                <el-button-group class="user-button-group">
+                                    <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]" @click="UnlockPassword(connect_user,scope.row.app)" >
+                                        <el-icon><Unlock /></el-icon>
+                                    </el-button>
+                                    <el-button class="user-button" type="primary" v-show="scope.row.ButtonVisible[connect_user]" @click="DeletePassword(scope.$index,connect_user,scope.row.app)" >
+                                        <el-icon><Delete /></el-icon>
+                                    </el-button>
+                                </el-button-group>
                             </div>
-                        </template>
-                    </el-table-column>  
-                      
-                    <!-- <el-table-column label="Operate">
-                        <template v-slot="scope">
-                            <el-button type="danger" @click="handleDelete_password(scope.$index,scope.row.connect_user,scope.row.app)">delete</el-button>
-                        </template>
-                    </el-table-column> -->
-                </el-table>
-            </div>
-            <!-- 调试用，调试完记住删 -->
-        <!-- <div class="show-test">
-            <button @click="InitPasswordMap">button</button>
-            <div>
-                {{this.password_map}}
-            </div>
-            
-        </div> -->
+                            <!-- :icon="Lock" :icon="Unlock" :icon="Delete" -->
+                            <el-button class="user-button" type="primary" @click="LockPassword(scope.row.app)" >
+                                <el-icon><Lock /></el-icon>
+                            </el-button>
+                            <el-icon class="addpasswd-icon" @click="OpenAddWinowWithAPP(scope.row.app)"><CirclePlus/></el-icon>
+                        </div>
+                    </template>
+                </el-table-column>  
+                    
+                <!-- <el-table-column label="Operate">
+                    <template v-slot="scope">
+                        <el-button type="danger" @click="handleDelete_password(scope.$index,scope.row.connect_user,scope.row.app)">delete</el-button>
+                    </template>
+                </el-table-column> -->
+            </el-table>
+        </div>
     </div>
 
     <!-- 添加密码界面 -->
     <AddPasswordUI v-model:AddWindowVisible="AddWindowVisible" :Application="AddUIApp" page="ClientHomePage/PasswordManage" :myfunction="PasswordSearchAll"></AddPasswordUI>
-    
-        <!-- <h2> App-Password Manage </h2>
-        <h3> App-Password Search </h3>
-            <div class="password-search">
-                <el-form :model="myform_password" :inline="true">
-                    <el-form-item label="Application">
-                        <el-input v-model="myform_password.app" placeholder="Application"/>
-                    </el-form-item>
-                    <el-form-item label="Connect User">
-                        <el-input v-model="myform_password.connect_user" placeholder="Connect User"/>
-                    </el-form-item>
-                    <el-form-item>
-                        <el-button type="primary" @click="PasswordSearch">Search</el-button>
-                        <el-button type="primary" @click="PasswordSearchAll">SearchAll</el-button>
-                        <el-button @click="PasswordReset">Reset</el-button>
-                    </el-form-item>
-                </el-form>
-            </div>
-            <div class="password-table">
-                <el-table :data="tableData" style="width:100%">
-                    <el-table-column label='Index' width="180">
-                        <template v-slot="scope"> {{scope.$index+1}}</template>
-                    </el-table-column>
-                    <el-table-column label='Connect User' width="180">
-                        <template v-slot="scope"> {{scope.row.connect_user}}</template>
-                    </el-table-column>  
-                    <el-table-column label='Application' width="180">
-                        <template v-slot="scope"> {{scope.row.app}}</template>
-                    </el-table-column>    
-                    <el-table-column label="Operate">
-                        <template v-slot="scope">
-                            <el-button type="danger" @click="handleDelete_password(scope.$index,scope.row.connect_user,scope.row.app)">delete</el-button>
-                        </template>
-                    </el-table-column>
-                </el-table>
-            </div>
-        <AddPasswordUI page="ClientHomePage/PasswordManage" :myfunction="PasswordSearch"></AddPasswordUI>
-        <SearchPasswordUI page="ClientHomePage/PasswordManage" :myfunction="ResultSearch"></SearchPasswordUI>
-        <!-- <div></div>
-        <h3> Password Search Result table </h3>
-        <div class="result-search">
-            <el-form :model="myform_result" :inline="true">
-                <el-form-item label="Application">
-                    <el-input v-model="myform_result.app" placeholder="Application"/>
-                </el-form-item>
-                <el-form-item label="Connect User">
-                    <el-input v-model="myform_result.cosnnect_user" placeholder="Connect User"/>
-                </el-form-item>
-                <el-form-item label="Stage"> 
-                    <el-select v-model="myform_result.selectedOption" placeholder="select">
-                        <el-option
-                            v-for="option in stage_options"
-                            :key="option.value"
-                            :label="option.label"
-                            :value="option.value"
-                            :selected="option.value==1"
-                        ></el-option>
-                    </el-select>
-                </el-form-item>
-                <el-form-item>
-                    <el-button type="primary" @click="ResultSearch">Search</el-button>
-                    <el-button type="primary" @click="ResultSearchAll">SearchAll</el-button>
-                    <el-button @click="ResultReset">Reset</el-button>
-                </el-form-item>
-            </el-form>
-        </div>
-        <div class="password-table">
-            <el-table :data="tableData_result" style="width:100%">
-                <el-table-column label='Index' width="180">
-                    <template v-slot="scope"> {{scope.$index+1}}</template>
-                </el-table-column>
-                <el-table-column label='Connect User' width="180">
-                    <template v-slot="scope"> {{scope.row.connect_user}}</template>
-                </el-table-column>  
-                <el-table-column label='Application' width="180">
-                    <template v-slot="scope"> {{scope.row.app}}</template>
-                </el-table-column>    
-                <el-table-column label='Stage' width="180">
-                    <template v-slot="scope"> {{scope.row.stage}}</template>
-                </el-table-column> 
-                <el-table-column label='Password' width="180">
-                    <template v-slot="scope"> {{scope.row.password}}</template>
-                </el-table-column> 
-                <el-table-column label="Operate">
-                    <template v-slot="scope">
-                        <el-button type="danger" @click="handleDelete_result(scope.$index,scope.row.connect_user,scope.row.app,scope.row.stage)">delete</el-button>
-                    </template>
-                </el-table-column>
-            </el-table>
-        </div> -->
 </template>
 
 <script>
@@ -233,12 +133,30 @@ export default{
             this.tableData = this.tableData.map(row =>({
                 ...row, // 复制原有的属性
                 ButtonVisible : this.InitButtonVisible(row),
-                stage:3,
+                // stage:3,
             }));
             console.log("tableData",this.tableData);
         },
         SearchPasswordUsing(){
-
+            // 查找当前正在请求或者已经解锁的密码
+            var new_table = [];
+            for(let i=0;i<this.tableData.length;i++){
+                var app=this.tableData[i].app;
+                var connect_user=this.tableData[i].connect_user;
+                var new_users = [];
+                for(let j=0;j<connect_user.length;j++){
+                    var value = connect_user[j];
+                    var stage = this.stage_map.get(app+"-"+value);
+                    if(stage=="has complete" || stage=="hasn't completed"){
+                        new_users.push(value);
+                    }
+                }
+                if(new_users.length>0){
+                    new_table.push({"app":app,connect_user:new_users});
+                }
+            }
+            this.tableData = new_table;
+            this.ChangeTableData();
         },
         ToggleButton(row,connect_user){
             // console.log("togglbutton tableData",this.tableData);
@@ -398,87 +316,6 @@ export default{
             this.AddUIApp = app;
             this.AddWindowVisible = true;
         },
-        // PasswordReset(){
-        //     this.myform_password.connect_user = '';
-        //     this.myform_password.app = '';
-        // },
-        // handleDelete_password(index,temp1,temp2){
-        //     console.log('delete user:',temp1,' app:',temp2)
-        //     this.tableData.splice(index, 1);
-        //     axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Password-Delete",{
-        //         "connect_user": temp1,
-        //         "app":temp2,
-        //     })
-        //     .then(response => {
-        //             console.log('delete.');
-        //         },
-        //     )
-        //     .catch(response => {
-        //         console.log("error",response);
-        //         alert("请求失败");
-        //     })
-        // },
-
-        // ResultSearchAll(){
-        //     axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Search",{
-        //         "Username": "",
-        //         "Application":"",
-        //         "stage":"",
-        //     })
-        //     .then(response=>{
-        //         this.tableData_result=response.data;
-        //         console.log('get result data.',this.tableData_result);
-        //     },)
-        //     .catch(error=>{
-        //         console.log("error",error);
-        //         alert("请求失败");
-        //     })
-        // },
-
-        // ResultSearch(){
-        //     var myform = this.myform_result
-        //     if(myform.app==""&&myform.connect_user=="")
-        //     {
-        //         self.PasswordSearchAll()
-        //         return 
-        //     }
-        //     axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Search",{
-        //         "Username": myform.connect_user,
-        //         "Application":myform.app,
-        //         "stage":myform.selectedOption,
-        //     })
-        //     .then(response => {
-        //             console.log('get result data.',response.data);
-        //             this.tableData_result = response.data;
-        //         },
-        //     )
-        //     .catch(response => {
-        //         console.log("error",response);
-        //         alert("请求失败");
-        //     })
-        // },
-
-        // ResultReset(){
-        //     this.myform_result.Username = '';
-        //     this.myform_result.app = '';
-        //     this.myform_result.selectedOption = 1;
-        // },
-        // handleDelete_result(index,temp1,temp2,temp_stage){
-        //     this.tableData_result.splice(index, 1);
-        //     axios.post("http://localhost:8090/ClientHomePage/PasswordManage/Result-Delete",{
-        //         "Username": temp1,
-        //         "Application":temp2,
-        //         "stage":temp_stage,
-        //     })
-        //     .then(response => {
-        //             console.log('delete.');
-        //         },
-        //     )
-        //     .catch(response => {
-        //         console.log("error",response);
-        //         alert("请求失败");
-        //     })
-        // },
     }
 }
 </script>
@@ -486,8 +323,8 @@ export default{
 <style scoped>  
 .top-div{
     background: white;
+    height: 50px;
     display: flex;
-    align-items: center;
     margin-top: 5px;
     margin-bottom: 5px;
 }
@@ -495,11 +332,26 @@ export default{
 .add-password{
     margin-left: 10px;
     margin-right: 10px;
+    display: flex;
+    align-items: center;
 }
 
 .password-search{
     display: flex;
     align-items: center;
+}
+
+.form{
+    display: flex;
+    margin-left:5px;
+}
+
+.el-form-item{
+    display: flex;
+    align-items: center;
+    align-content: center;
+    margin-top: 0px;
+    margin-bottom: 0px;
 }
 
 .status-circle {  

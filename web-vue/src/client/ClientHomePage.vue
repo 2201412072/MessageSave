@@ -46,15 +46,15 @@ export default ({
         },
         {
           id:3,
-          name:'Config',
-          icon:'Setting',
-          url:"/ClientHomePage/Config",
-        },
-        {
-          id:4,
           name:'PublicKeyManage',
           icon:'Box',
           url:"/ClientHomePage/PublicKeyManage",
+        },
+        {
+          id:4,
+          name:'Config',
+          icon:'Setting',
+          url:"/ClientHomePage/Config",
         },
       ]
     }

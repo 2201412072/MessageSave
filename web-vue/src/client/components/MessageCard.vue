@@ -1,5 +1,5 @@
 <template>
-    <div>
+    <div class="MessageCard">
         <div v-if="this.CardType=='AskEncrypt'" class="radius-card-ask-encrypt">
             <span>{{this.Content}}</span>
             <!-- <div class="flex-grow" /> -->
@@ -55,6 +55,10 @@ export default({
 </script>
 
 <style scoped>
+.MessageCard{
+    margin-left: 10px;
+}
+
 .radius-card-ask-encrypt{
     border-radius: round;
     box-shadow: dark;

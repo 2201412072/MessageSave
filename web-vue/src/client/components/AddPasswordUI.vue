@@ -29,7 +29,7 @@
 
 <script>
 // import { MessageBox } from 'element-ui';
-import { ref, watch } from 'vue'
+import {ref} from 'vue';
 
 const axios = require('axios');
 
@@ -49,23 +49,23 @@ export default{
         },
         Application:{
             type:String,
-            required:false
         }
-    },
-    components:{
-        //MessageBox
     },
     data(){
         return{
             myform:{
-                app:'',//this.Application
+                app:this.app,//this.Application
                 connect_user: '',
                 password:'',
                 confirm_password:'',
             },
             is_show_password:false,
             is_show_confirm_password:false,
-            // visible:false,
+        }
+    },
+    watch:{
+        Application(){
+            this.myform.app=this.Application;
         }
     },
     methods:{
@@ -86,6 +86,7 @@ export default{
                 alert("请确定密码输入时正确")
                     return
             }
+            console.log("axios http://localhost:8090/"+this.page+"/AddPassword");
             axios.post("http://localhost:8090/"+this.page+"/AddPassword",{
                 "connect_user": myform.connect_user,
                 "app":myform.app,
@@ -103,8 +104,8 @@ export default{
                     this.Reset();
                 },
             )
-            .catch(response => {
-                console.log("error",response);
+            .catch(error => {
+                console.log("error",error.response.data);
                 alert("请求失败");
             })
             this.Cancel();
